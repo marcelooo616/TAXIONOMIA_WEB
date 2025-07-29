@@ -1,0 +1,195 @@
+:root {
+            --tp-purple: #5f259f;
+            --tp-blue: #002b45;
+            --tp-light-gray: #f2f2f2;
+            --tp-dark-gray: #444;
+            --tp-white: #ffffff;
+		
+        }	
+
+        body {
+           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--tp-light-gray);
+            color: var(--tp-dark-gray);
+            margin: 0;
+            padding: 0;
+			width:100vw;
+			
+        }
+.assinatura-site {
+  position: fixed;
+  bottom: 10px;
+  right: 20px;
+  font-size: 13px;
+  color: #666;
+  z-index: 999;
+  background-color: var(--tp-light-gray);
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+	
+		 .container {
+			display: flex;
+			justify-content: space-around;
+            width: 90%;
+            margin: 50px auto;
+            background: var(--tp-white);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+			
+			
+        }
+		
+		header{
+			display: flex;
+			align-items: center;
+			padding:30px;
+			background-color: var(--tp-blue);
+			color: var(--tp-white);
+		}
+		
+        h2 {
+            color: var(--tp-white);
+            text-align: center;
+			background-color:var(--tp-blue);
+			border-radius: 5px;
+			padding:10px;
+			
+        }
+        label {
+            display: block;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            font-size: 14px;
+			 appearance: none;
+        }
+		
+		 select {
+		  background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="https://url.de.m.mimecastprotect.com/s/uVC8CnR2qZhX6o59MuRc2iJpElE?domain=w3.org" viewBox="0 0 10 6"><path fill="%23007BFF" d="M0 0l5 6 5-6z"/></svg>');
+		  background-repeat: no-repeat;
+		  background-position: right 10px center;
+		  background-size: 12px;
+    }
+	
+	
+	
+	 option {
+      padding: 10px;
+      
+      color: #333;
+    }
+
+    /* Estilo ao passar o mouse */
+    select:hover {
+      border-color: #0056b3;
+    }
+
+    /* Estilo ao focar */
+    select:focus {
+      border-color: #0056b3;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+		
+		.item-select-lob{
+			width: 10%;
+		
+		
+		
+		}
+		
+		.item-select-productArea{
+			width: 10%;
+		
+		
+		
+		}
+		.item-select-lob-product{
+			width: 10%;
+		
+		
+		
+		}
+		.item-select-topic{
+			width: 30%;
+		
+		
+		
+		}
+		.item-select-subtopic{
+			width: 30%;
+		
+		
+		
+		}
+		
+        #resultado {
+            margin-top: 30px;
+            font-weight: bold;
+            font-size: 16px;
+            background: var(--tp-blue);
+            color: var(--tp-white);
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+			width: 80%;
+			height: 20px;
+            margin: 50px auto;
+        }
+		
+		.buttons {
+            margin-top: 20px;
+            text-align: center;
+        }
+		
+        button {
+            background-color: var(--tp-blue);
+            color: var(--tp-white);
+            border: none;
+            padding: 10px 20px;
+            margin: 5px ;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+         button:hover {
+            background-color: #4a1f7a;
+        }
+		
+		.box-buttons{
+			display:flex;
+			
+			justify-content: flex-end;
+			aling-items: center;
+			margin-le: 50px auto;
+			justify-content: flex-and;
+			padding:20px;
+			
+		
+		}
+		
+		
+		
+		
+		@media (max-width: 600px) {
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+
+            button {
+                width: 100%;
+                margin: 10px 0;
+            }
+        }
+		
+		
+		

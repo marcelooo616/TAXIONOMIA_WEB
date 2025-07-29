@@ -1,0 +1,2122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html dir="ltr" xmlns="http://www.w3.org/1999/xhtml" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"
+    xmlns:mso="urn:schemas-microsoft-com:office:office">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Case Note Tool MLCS</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <meta http-equiv="X-UA-Compatible" content="IE=10" /><meta name="Microsoft Theme" content="none, default">
+    <script language="JavaScript"><!--//
+var verNo = "CS3 PT-BR"
+var currentTemplate = ""
+var currentTab = ""
+var updated = false;
+var notesChecked = false;
+ 
+// Add Format Method to String
+String.prototype.format = function (arg) {
+var rep_fn = undefined;
+
+if (typeof arg == "object") {
+rep_fn = function (m, k) { return arg[k]; }
+}
+else {
+var args = arguments;
+rep_fn = function (m, k) { return args[parseInt(k)]; }
+}
+
+return this.replace(/\{(\w+)\}/g, rep_fn);
+}
+
+// General Generate / Check / Reset
+var GenerateSection_Action = function () {
+var txt = "";
+
+for (var i = 0; i < this.Items.length; i++) {
+if (this.Items[i].ID.indexOf("activity") >= 0) {
+txt += "<tr valign=\"top\"><td align=\"center\">";
+txt += this.Items[i].GenerateBlock();
+txt += "</td></tr>";
+}
+}
+
+return txt;
+}
+var GenerateSection_Blocker = function () {
+var txt = "";
+
+for (var i = 0; i < this.Items.length; i++) {
+if (this.Items[i].ID.indexOf("blocker") >= 0) {
+txt += "<tr valign=\"top\"><td align=\"center\">";
+txt += this.Items[i].GenerateBlock();
+txt += "</td></tr>";
+}
+}
+
+return txt;
+}
+var GenerateSection_Solution = function () {
+var txt = "";
+
+for (var i = 0; i < this.Items.length; i++) {
+if (this.Items[i].ID.indexOf("solution") >= 0) {
+txt += "<tr valign=\"top\"><td align=\"center\">";
+txt += this.Items[i].GenerateBlock();
+txt += "</td></tr>";
+}
+}
+
+return txt;
+}
+
+var GenerateSection_taxonomy = function () {
+var txt = "";
+
+for (var i = 0; i < this.Items.length; i++) {
+if (this.Items[i].ID.indexOf("ta") >= 0) {
+txt += "<tr valign=\"top\"><td align=\"center\">";
+txt += this.Items[i].GenerateBlock();
+txt += "</td></tr>";
+}
+}
+
+return txt;
+}
+
+
+var GenerateNotes_RadioButton = function () {
+var txt = "";
+var retItem = getRadioItemChosen(this.Name);
+if (retItem != null) {
+if (retItem.res != "") {
+txt += "&nbsp;&nbsp;-&nbsp;" + retItem.res;
+}
+
+return { item: retItem.lbl, text: txt };
+}
+
+return { item: "", text: txt };
+}
+var HasValue_RadioButton = function () {
+for (var i = 0; true; i++) {
+tmp = this.Name + (i + 1);
+if (document.getElementById(tmp) == null) {
+break;
+} else if (document.getElementById(tmp).checked) {
+return true;
+}
+}
+
+return false;
+}
+var ResetValue_RadioButton = function () {
+for (var i = 0; true; i++) {
+tmp = this.Name + (i + 1);
+if (document.getElementById(tmp) == null) {
+break;
+}
+document.getElementById(tmp).checked = false;
+}
+document.getElementById(this.Name).style.backgroundColor = "inherit";
+}
+
+var GenerateNotes_CheckBox = function () {
+var txt = "";
+
+var retItem = getCheckBoxItemChosen(this.Name, 2);
+if (retItem != null) {
+txt += retItem.res;
+return { item: retItem.lbl, text: txt };
+}
+
+return { item: "", text: txt };
+}
+var HasValue_CheckBox = function () {
+for (var i = 0; true; i++) {
+tmp = this.Name + (i + 1);
+if (document.getElementById(tmp) == null) {
+break;
+} else if (document.getElementById(tmp).checked) {
+return true;
+}
+}
+
+return false;
+}
+var ResetValue_CheckBox = function () {
+for (var i = 0; true; i++) {
+tmp = this.Name + (i + 1);
+if (document.getElementById(tmp) == null) {
+break;
+}
+document.getElementById(tmp).checked = false;
+}
+document.getElementById(this.Name).style.backgroundColor = "inherit";
+}
+ 
+var GenerateNotes_DropDownList = function (){
+var txt = "";
+var retItem = getDropDownItemSelected(this.Name);
+if (retItem != null) {
+if (retItem.res != "") {
+txt += "&nbsp;&nbsp;-&nbsp;" + retItem.res;
+}
+
+return { item: retItem.lbl, text: txt };
+}
+ 
+return { item: "", text: txt };
+}
+var HasValue_DropDownList = function () {
+var selItem = document.getElementById(this.Name);
+if (selItem == null) {
+return false;
+}
+
+if (selItem.selectedIndex > 0) {
+return true;
+}
+
+return false;
+}
+var ResetValue_DropDownList = function () {
+var selItem = document.getElementById(this.Name);
+if (selItem == null) {
+return;
+}
+
+selItem.style.backgroundColor = "inherit";
+selItem.selectedIndex = 0;
+}
+
+var GenerateNotes_TextArea = function () {
+var txt = "";
+var v = document.getElementById(this.Name).value;
+if (v != "") {
+txt += "&nbsp;&nbsp;-&nbsp;" + sanitizeString(v).replace(/\n/g, "\n&nbsp;&nbsp;&nbsp;&nbsp;");
+}
+return { item: "", text: txt };
+}
+var HasValue_TextArea = function () {
+var textArea = document.getElementById(this.Name);
+if (textArea == null) {
+return false;
+}
+
+if (textArea.value != "") {
+textArea.style.backgroundColor = "inherit";
+return true;
+}
+
+return false;
+}
+var ResetValue_TextArea = function () {
+var textArea = document.getElementById(this.Name);
+if (textArea == null) {
+return false;
+}
+
+textArea.value = "";
+textArea.style.backgroundColor = "inherit";
+}
+
+
+function BlockData(section, name, title, isMandatory, blockType) {
+this.ID = "{0}_{1}".format(section, name);
+this.Section = section;
+this.Title = title;
+this.BlockType = blockType;
+if ((section == "activity") || (section == "blocker")) {
+this.TabName = "actionblocker";
+}
+else if (section == "solution")
+{
+this.TabName = "solution";
+}
+this.Name = "cn_{0}".format(name);
+this.IsMandatory = isMandatory;
+}
+
+function TemplateData(tname) {
+this.Name = tname;
+this.Items = new Array();
+this.GenerateSection_Action = GenerateSection_Action;
+this.GenerateSection_Blocker = GenerateSection_Blocker;
+this.GenerateSection_Solution = GenerateSection_Solution;
+this.H = new Array();
+ 
+this.ResetFields = function () {
+for (var i = 0; i < this.Items.length; i++) {
+this.Items[i].ResetValue();
+}
+}
+this.MandatoryFieldCheck = function () {
+var txt = "";
+
+for (var i = 0; i < this.Items.length; i++) {
+if (this.Items[i].IsMandatory) {
+if (!this.Items[i].HasValue()) {
+
+txt += "Campo não preenchido: <a href=\"javascript:void(0)\" onclick=\"JavaScript: ExpandSectionTo('{0}')\">{1}</a><br />".format(this.Items[i].TabName, this.Items[i].Title);
+
+switch (this.Items[i].BlockType) {
+case "TextArea":
+case "DropDownList":
+case "RadioButton":
+case "CheckBox":
+document.getElementById(this.Items[i].Name).style.backgroundColor = "lightyellow";
+break;
+default:
+}
+}
+else {
+switch (this.Items[i].BlockType) {
+case "TextArea":
+case "DropDownList":
+case "RadioButton":
+case "CheckBox":
+document.getElementById(this.Items[i].Name).style.backgroundColor = "inherit";
+break;
+default:
+}
+}
+}
+}
+return txt;
+}
+}
+
+TemplateData.prototype.RegisterItem = function (section, itemname, isMandatory, title, blockType) {
+var count = this.Items.length;
+var itemid = "{0}_{1}".format(section, itemname);
+this.H[itemid] = count;
+
+this.Items[count] = new BlockData(section, itemname, title, isMandatory, blockType);
+ 
+return count;
+}
+TemplateData.prototype.AddItemCustom = function (section, itemname, isMandatory, fnc_genblock, fnc_gennote, fnc_hasvalue, fnc_resetvalue) {
+var index = this.RegisterItem(section, itemname, isMandatory, "", "Custom");
+
+this.Items[index].GenerateNote = fnc_gennote;
+this.Items[index].GenerateBlock = fnc_genblock;
+this.Items[index].HasValue = fnc_hasvalue;
+this.Items[index].ResetValue = fnc_resetvalue;
+}
+TemplateData.prototype.AddItemRadioButton = function (section, itemname, isMandatory, title, fnc_genblock) {
+var index = this.RegisterItem(section, itemname, isMandatory, title, "RadioButton");
+ 
+this.Items[index].GenerateNote = GenerateNotes_RadioButton;
+this.Items[index].HasValue = HasValue_RadioButton;
+this.Items[index].ResetValue = ResetValue_RadioButton;
+
+this.Items[index].GenerateBlock = fnc_genblock;
+}
+TemplateData.prototype.AddItemCheckBox = function (section, itemname, isMandatory, title, fnc_genblock) {
+var index = this.RegisterItem(section, itemname, isMandatory, title, "CheckBox");
+ 
+this.Items[index].GenerateNote = GenerateNotes_CheckBox;
+this.Items[index].HasValue = HasValue_CheckBox;
+this.Items[index].ResetValue = ResetValue_CheckBox;
+
+this.Items[index].GenerateBlock = fnc_genblock;
+}
+TemplateData.prototype.AddItemDropDownList = function (section, itemname, isMandatory, title, fnc_genblock) {
+var index = this.RegisterItem(section, itemname, isMandatory, title, "DropDownList");
+ 
+this.Items[index].GenerateNote = GenerateNotes_DropDownList;
+this.Items[index].HasValue = HasValue_DropDownList;
+this.Items[index].ResetValue = ResetValue_DropDownList;
+
+this.Items[index].GenerateBlock = fnc_genblock;
+}
+TemplateData.prototype.AddItemTextArea = function (section, itemname, isMandatory, title, fnc_genblock) {
+var index = this.RegisterItem(section, itemname, isMandatory, title, "TextArea");
+
+this.Items[index].GenerateNote = GenerateNotes_TextArea;
+this.Items[index].HasValue = HasValue_TextArea;
+this.Items[index].ResetValue = ResetValue_TextArea;
+
+this.Items[index].GenerateBlock = fnc_genblock;
+}
+TemplateData.prototype.AddItemHTMLBlock = function (section, fnc_genblock) {
+var index = this.RegisterItem(section, "HTMLBlock{0}".format(this.Items.length), false, "", "HTMLBlock");
+ 
+this.Items[index].GenerateNote = function () { return; };
+this.Items[index].HasValue = function () { return true; };
+this.Items[index].ResetValue = function () { return; };
+
+this.Items[index].GenerateBlock = fnc_genblock;
+}
+ 
+var templates = new Array();
+
+templateName = "general";
+var td = new TemplateData("General");
+templates[templateName] = td;
+
+// General: Define Blocks
+td.AddItemTextArea("activity", "issue", true, "Activity: Descreva o que o cliente está tentando fazer", function () {
+return CreateTextAreaBlock(this.Title, this.Name, this.IsMandatory);
+});
+td.AddItemRadioButton("blocker", "blt", true, "Blocker: Descreva o problema", function () {
+var txt = "";
+
+// Blocker: blocker symptom (Table with Radio)
+blockerArrayDisplay = new Array(
+"Problemas na ativação"
+, "Problemas na instalação" 
+, "Problemas de Atualização"                
+, "How-To - Descreva abaixo"
+, "Outros - Descreva abaixo"
+, "Mensagens ou códigos de erro - Descreva abaixo"
+);
+
+blockerArrayNote = new Array(
+"Windows com problemas na ativação"
+, "Windows com problemas na instalação"
+, "Windows com problemas na atualização"
+, "O cliente precisa de um tutorial de como fazer algo"
+, ""
+, ""
+);
+
+txt += CreateRadioTable(this.Title, this.Name, this.IsMandatory, blockerArrayDisplay, blockerArrayNote, 2);
+
+return txt;
+});
+td.AddItemHTMLBlock("blocker", function () {
+return "<table>";
+}); // <table>
+td.AddItemCustom("blocker", "additonal", false, function () {
+var txt = "";
+txt += "<tr><td>&nbsp;</td></tr>";
+txt += "<tr>"
++ "<td><span id=\"ttl_symptom\">Detalhes adicionais do problema:</span></td>"
++ "<td><textarea id=\"cn_symptom\" cols=\"50\" rows=\"6\" onkeyup=\"JavaScript:fieldUpdated()\"></textarea></td>"
++ "</tr>";
+txt += "<tr>"
++ "<td><span id=\"ttl_err\">Mensagem ou código de erro:</span></td>"
++ "<td><textarea id=\"cn_err\" cols=\"50\" rows=\"2\" onkeyup=\"JavaScript:fieldUpdated()\"></textarea><br /></td>"
++ "</tr>";
+return txt;
+}, function () {
+var txt = "";
+if (document.getElementById('cn_symptom').value != "") {
+txt += "&nbsp;&nbsp;-&nbsp;" + sanitizeString(document.getElementById('cn_symptom').value).replace(/\n/g, "\n&nbsp;&nbsp;&nbsp;&nbsp;");
+}
+ 
+if (document.getElementById('cn_err').value != "") {
+if (txt != "") {
+txt += "<br/>";
+}
+txt += "&nbsp;&nbsp;<b>Mensagem ou código de erro:</b><br/>";
+txt += "&nbsp;&nbsp;" + sanitizeString(document.getElementById('cn_err').value);
+}
+return { item: "test", text: txt };
+}, function () {
+return (document.getElementById('cn_symptom').value != "") && (document.getElementById('cn_err').value != "");
+}, function () {
+document.getElementById('cn_symptom').value = "";
+document.getElementById('cn_err').value = "";
+});
+td.AddItemHTMLBlock("blocker", function () {
+return "</table>";
+}); // </table>
+td.AddItemCheckBox("solution", "ts", false, "Procedimentos executados", function () {
+var txt = "";
+
+var tscols = parseInt(getQueryString("tscols"));
+var tscolspan = (isNaN(tscols)) ? (3) : (tscols);
+
+TroubleshootListDisplay = new Array(
+"QA"
+, "MSCONFIG"
+, "Nova conta de usuário"
+, "Reinstalação do Windows"
+, "Inplace de troca de edição"
+, "Changepk"
+, "Limpeza do licenciamento do Windows (SLMGR)"
+, "Solução de problemas de ativação"
+, "Criada a mídia de instalação"
+, "Boot em Pen Drive"
+, "Executado o comando (WMIC)"
+, "Remoção de KMS"
+, "Verificação do Serviço de Proteção de Software (SPPSVC)"
+, "Redefinição dos componentes do Windows Update"
+, "Ativação por telefone [SLUI 4, (slmgr /dti e slmgr /atp id)]"
+, "Redefinição de rede"
+, "Desativação do Firewall"
+, "Restauração do sistema"
+, "Redefinição de navegadores (IE or Edge)"
+, "Atualização pelo Windows Update"
+, "Reinicialização do Windows"
+, "Modo de Segurança"
+, "Atualização de drivers"
+, "Voltar para a versão anterior"
+, "Atualização in-place"
+, "Remoção/desativação do Antivirus"
+);
+TroubleshootListValue = new Array(
+"Feito acesso remoto pelo QA."
+, "Inicialização limpa do Windows."
+, "Criada uma nova conta de usuário."
+, "O Windows foi reinstalado."
+, "Feito inplace para a troca de edição do Windows."
+, "Utilizado do changepk para alterar a edição do Windows."
+, "Feita a limpeza do licenciamento do Windows."
+, "Executada a solução de problemas de ativação."
+, "Feita a criação da mídia de instalação."
+, "Feito o boot pelo Pen Drive."
+, "Executado WMIC para recuperação da chave OEM na BIOS do PC."
+, "Feita a remoção de KMS no Windows."
+, "Feita a verificação do serviço de proteção de software do Windows."
+, "Feita a redefinição dos componentes do Windows Update."
+, "Realizado ativação por telefone. [SLUI 4, (slmgr /dti e slmgr /atp id)]."
+, "Feita a redefinição de rede do Windows."
+, "Feita a desativação do firewall do Windows."
+, "Restauração do sistema."
+, "Os navegadores foram redefinidos."
+, "O Windows foi atualizado pelo Windows Update."
+, "O Windows foi reiniciado."
+, "O Windows foi iniciado em Modo de Segurança."
+, "Os drivers foram atualizados pelo Windows Update."
+, "Instalada versão anterior do Windows."
+, "Feito in-place no Windows."
+, "O Antivirus foi desativado/removido."
+);
+txt += CreateCheckBoxTable(this.Title, this.Name, this.IsMandatory, TroubleshootListDisplay, TroubleshootListValue, tscolspan);
+
+return txt;
+});
+td.AddItemTextArea("solution", "additional", false, "Soluções adicionais executadas/Links utilizados", function () {
+return CreateTextAreaBlock(this.Title, this.Name, this.IsMandatory);
+});
+td.AddItemTextArea("solution", "resolution", true, "Procedimentos que resolveram o problema/Plano de ação", function () {
+return CreateTextAreaBlock(this.Title, this.Name );
+ 
+});
+
+
+
+
+
+// General: GenerateNotes
+td.GenerateNotes_Action = function () {
+var txt = "";
+
+var noteItem = this.Items[this.H["activity_issue"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+
+
+return txt;
+}
+
+
+td.GenerateNotes_Blocker = function () {
+var txt = "";
+
+// Output Blocker: Blocker
+noteItem = this.Items[this.H["blocker_blt"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+// Output Blocker: Symptom Details/Error
+noteItem = this.Items[this.H["blocker_additonal"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+return txt;
+}
+td.GenerateNotes_Solution = function () {
+var txt = "";
+
+// Output Solution: Troubleshoots applied
+if (this.TSApplied()) {
+txt += "&nbsp;&nbsp;<b>Procedimentos executados:</b><br/>";
+
+noteItem = this.Items[this.H["solution_ts"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+noteItem = this.Items[this.H["solution_additional"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+txt += "<br/>";
+}
+
+
+
+// Output Solution: Resolution
+txt += "&nbsp;&nbsp;<b>Procedimentos que resolveram o problema:</b><br/>";
+
+noteItem = this.Items[this.H["solution_resolution"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/><br/><br/>";
+}
+
+
+
+return txt;
+
+return txt;
+
+}
+
+// General: Check Func
+td.TSApplied = function () {
+if ((this.Items[this.H["solution_ts"]].HasValue())
+|| (this.Items[this.H["solution_additional"]].HasValue())
+) return true;
+
+return false;
+}
+
+
+
+ 
+ 
+templateName = "office";
+var td = new TemplateData("Officel");
+templates[templateName] = td;
+
+// General: Define Blocks
+td.AddItemTextArea("activity", "issue", true, "Activity: Descreva o que o cliente está tentando fazer", function () {
+return CreateTextAreaBlock(this.Title, this.Name, this.IsMandatory);
+});
+td.AddItemRadioButton("blocker", "blt", true, "Blocker: Descreva o problema", function () {
+var txt = "";
+
+// Blocker: blocker symptom (Table with Radio)
+blockerArrayDisplay = new Array(
+"Problemas no download do Office"
+, "Problemas na instalação do Office"
+, "Problemas na ativação do Office"
+, "Problemas na atualização do Office"
+, "How-To - Descreva abaixo"
+, "Outros - Descreva abaixo"
+, "Mensagem ou código de erro - Por favor descreva abaixo"
+);
+
+blockerArrayNote = new Array(
+"Problemas no download do Office"
+, "Problemas na instalação do Office"
+, "Problemas na ativação do Office"
+, "Problemas na atualização do Office"
+, "How-To - Descreva abaixo"
+, ""
+, ""
+);
+
+txt += CreateRadioTable(this.Title, this.Name, this.IsMandatory, blockerArrayDisplay, blockerArrayNote, 2);
+
+return txt;
+});
+td.AddItemHTMLBlock("blocker", function () {
+return "<table>";
+}); // <table>
+td.AddItemCustom("blocker", "additonal", false, function () {
+var txt = "";
+txt += "<tr><td>&nbsp;</td></tr>";
+txt += "<tr>"
++ "<td><span id=\"ttl_symptom\">Detalhes adicionais do problema:</span></td>"
++ "<td><textarea id=\"cn_symptom\" cols=\"50\" rows=\"6\" onkeyup=\"JavaScript:fieldUpdated()\"></textarea></td>"
++ "</tr>";
+txt += "<tr>"
++ "<td><span id=\"ttl_err\">Mensagem ou código de erro:</span></td>"
++ "<td><textarea id=\"cn_err\" cols=\"50\" rows=\"2\" onkeyup=\"JavaScript:fieldUpdated()\"></textarea><br /></td>"
++ "</tr>";
+return txt;
+}, function () {
+var txt = "";
+if (document.getElementById('cn_symptom').value != "") {
+txt += "&nbsp;&nbsp;-&nbsp;" + sanitizeString(document.getElementById('cn_symptom').value).replace(/\n/g, "\n&nbsp;&nbsp;&nbsp;&nbsp;");
+}
+ 
+if (document.getElementById('cn_err').value != "") {
+if (txt != "") {
+txt += "<br/>";
+}
+txt += "&nbsp;&nbsp;<b>Mensagem ou código de erro:</b><br/>";
+txt += "&nbsp;&nbsp;" + sanitizeString(document.getElementById('cn_err').value);
+}
+return { item: "test", text: txt };
+}, function () {
+return (document.getElementById('cn_symptom').value != "") && (document.getElementById('cn_err').value != "");
+}, function () {
+document.getElementById('cn_symptom').value = "";
+document.getElementById('cn_err').value = "";
+});
+td.AddItemHTMLBlock("blocker", function () {
+return "</table>";
+}); // </table>
+td.AddItemCheckBox("solution", "ts", false, "Procedimentos executados", function () {
+var txt = "";
+
+var tscols = parseInt(getQueryString("tscols"));
+var tscolspan = (isNaN(tscols)) ? (3) : (tscols);
+
+TroubleshootListDisplay = new Array(
+"QA"
+, "Inicialização limpa"
+, "Nova conta de usuário"
+, "Corrigido erro 'Instalar no canal de atualização selecionado'"
+, "Download do instalador offline (ISO)"
+, "Verificamos se há produto incluído com o dispositivo na MS Store"
+, "Permitidas as regras de entrada e desabilitado o Firewall"
+, "Redefinição de rede"
+, "VPN Remoção/Desativação"
+, "Ativação por telefone (via comando)"
+, "Limpeza de Keychain (Mac)"
+, "Limpeza de dados de aplicação (Mac)"
+, "Limpeza e reset no navegador"
+, "Limpeza e modificações nas opções da internet"
+, "Realizado a limpeza das credenciais do Windows"
+, "Renomeadas as pastas OneAuth e IdentityCache para .old"
+, "Reinstalação do Office"
+, "Reparo Online"
+, "Reparo rápido"
+, "Atualização do Office"
+, "Atualização no Windows"
+, "Reinicialização do Windows"
+, "Ativação por telefone"
+, "Troca de DNS"
+, "Modo de Segurança"
+, "UNPKEY"
+, "Rollback da build"
+, "Remoção/Desativação do antivirus"
+, "SARA"
+, "Ativação com chave de produto"
+);
+TroubleshootListValue = new Array(
+"Acesso remoto realizado via QuickAssist (QA)."
+, "Inicialização limpa do Windows concluída."
+, "Nova conta de usuário criada no Windows."
+, "Valor UpdateBranch removido da política do Office no registro."
+, "Download do instalador offline (ISO) do Office efetuado."
+, "(AFO) Verificação se está incluído Office/M365 na Microsoft Store."
+, "Regras de entrada permitidas e Firewall desabilitado."
+, "Redefinição de rede realizada nas configurações."
+, "VPN removida ou desativada."
+, "Ativação por telefone realizada através do prompt de comando."
+, "Realizado a limpeza das autenticações na Keychain (Mac)."
+, "Limpeza dos dados de aplicativos no Clear Application Data."
+, "Limpeza de cache, reset e atualização do navegador realizados."
+, "Limpeza e reset das opções da internet (inetcpl.cpl) realizados."
+, "Realizado a limpeza das credenciais do Windows."
+, "Pastas OneAuth e IdentityCache renomeadas para .old."
+, "Reinstalação do Office concluída."
+, "Reparo online do Office realizado."
+, "Reparo rápido do Office concluído."
+, "Todas as atualizações do Office aplicadas."
+, "Todas as atualizações do Windows aplicadas."
+, "Windows reiniciado."
+, "Realizado Ativação do Office por telefone."
+, "DNS trocado."
+, "Aplicativo executado em modo de Segurança."
+, "Chaves de ativação do Office limpas pelo UNPKEY."
+, "Instalação da versão anterior do Office concluída."
+, "Antivírus removido ou desativado."
+, "Executado SARA"
+, "Ativação do Office utilizando a chave do produto realizada."
+
+
+
+
+
+
+
+
+
+
+
+ 
+);
+
+txt += CreateCheckBoxTable(this.Title, this.Name, this.IsMandatory, TroubleshootListDisplay, TroubleshootListValue, tscolspan);
+
+return txt;
+});
+
+
+td.AddItemTextArea("solution", "additional", false, "Soluções adicionais executadas/Links utilizados", function () {
+return CreateTextAreaBlock(this.Title, this.Name, this.IsMandatory);
+});
+td.AddItemTextArea("solution", "resolution", true, "Procedimentos que resolveram o problema/Plano de ação", function () {
+return CreateTextAreaBlock(this.Title, this.Name);
+});
+
+
+
+// General: GenerateNotes
+td.GenerateNotes_Action = function () {
+var txt = "";
+
+var noteItem = this.Items[this.H["activity_issue"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+return txt;
+}
+td.GenerateNotes_Blocker = function () {
+var txt = "";
+
+// Output Blocker: Blocker
+noteItem = this.Items[this.H["blocker_blt"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+// Output Blocker: Symptom Details/Error
+noteItem = this.Items[this.H["blocker_additonal"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+return txt;
+
+
+}
+
+
+
+td.GenerateNotes_Solution = function () {
+var txt = "";
+
+// Output Solution: Troubleshoots applied
+if (this.TSApplied()) {
+txt += "&nbsp;&nbsp;<b>Procedimentos executados:</b><br/>";
+
+noteItem = this.Items[this.H["solution_ts"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+noteItem = this.Items[this.H["solution_additional"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+txt += "<br/>";
+}
+
+
+
+
+// Output Solution: Resolution
+txt += "&nbsp;&nbsp;<b>Procedimentos que resolveram o problema:</b><br/>";
+
+noteItem = this.Items[this.H["solution_resolution"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+return txt;
+}
+
+// General: Check Func
+td.TSApplied = function () {
+if ((this.Items[this.H["solution_ts"]].HasValue())
+|| (this.Items[this.H["solution_additional"]].HasValue())
+) return true;
+
+return false;
+}
+
+
+templateName = "AB";
+var td = new TemplateData("AB");
+templates[templateName] = td;
+
+// General: Define Blocks
+td.AddItemTextArea("activity", "issue", true, "Activity: Descreva o que o cliente está tentando fazer", function () {
+return CreateTextAreaBlock(this.Title, this.Name, this.IsMandatory);
+});
+ 
+td.AddItemHTMLBlock("blocker", function () {
+return "<table>";
+}); // <table>
+	
+	
+td.AddItemRadioButton("blocker", "blt", true, "Blocker: Descreva o problema", function () {
+var txt = "";
+
+// Blocker: blocker symptom (Table with Radio)
+blockerArrayDisplay = new Array(
+"Cenário de reembolso: Reembolso fora do prazo"
+, "Cenário de reembolso: Não sabe em qual conta foi cobrado" 
+, "Cenário de reembolso: Cobrança duplicada"                
+, "Cenário de ATO: Conta hackeada"
+, "Travamento"
+, "Problemas para iniciar ou desligar"
+, "How-To - Descreva abaixo"
+, "Outros - Descreva abaixo"
+, "Mensagens ou códigos de erro - Descreva abaixo"
+);
+
+blockerArrayNote = new Array(
+"Reembolso fora do prazo."
+, "Não sabe em qual conta foi cobrado."
+, "Cobrança duplicada."
+, "Não consegue acessar a conta, pois foi hackeada."
+, "O Windows está com travamentos."
+, "O Windows está com problemas para iniciar ou desligar"
+, "O cliente precisa de um tutorial de como fazer algo"
+, ""
+, ""
+);
+
+txt += CreateRadioTable(this.Title, this.Name, this.IsMandatory, blockerArrayDisplay, blockerArrayNote, 2);
+
+return txt;
+});
+ 
+td.AddItemHTMLBlock("blocker", function () {
+return "</table>";
+}); // </table>
+	
+td.AddItemCheckBox("solution", "ts", false, "Procedimentos executados - Cenário de cobrança:", function () {
+var txt = "";
+
+var tscols = parseInt(getQueryString("tscols"));
+var tscolspan = (isNaN(tscols)) ? (4) : (tscols);
+
+txt += CreateCheckBoxTable(this.Title, this.Name, this.IsMandatory, TroubleshootListDisplay, TroubleshootListValue, tscolspan);
+
+return txt;
+});
+	
+
+	
+td.AddItemTextArea("solution", "additional", false, "Informações adicionais sobre o que foi feito no caso(se necessário):", function () {
+return CreateTextAreaBlock(this.Title, this.Name, this.IsMandatory);
+});
+td.AddItemTextArea("solution", "resolution", false, "Plano de ação (se necessário)", function () {
+return CreateTextAreaBlock(this.Title, this.Name );
+ 
+});
+
+
+
+
+
+// General: GenerateNotes
+td.GenerateNotes_Action = function () {
+var txt = "";
+
+var noteItem = this.Items[this.H["activity_issue"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+
+
+return txt;
+}
+td.GenerateNotes_Blocker = function () {
+var txt = "";
+
+// Output Blocker: Blocker
+noteItem = this.Items[this.H["blocker_blt"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+// Output Blocker: Symptom Details/Error
+noteItem = this.Items[this.H["blocker_additonal"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+return txt;
+}
+	
+ 
+ 
+td.GenerateNotes_Solution = function () {
+var txt = "";
+
+// Output Solution: Troubleshoots applied
+if (this.TSApplied()) {
+}
+
+noteItem = this.Items[this.H["solution_ts2"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+	
+noteItem = this.Items[this.H["solution_ts3"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+// Output Solution: Resolution
+txt += "&nbsp;&nbsp;<b>Procedimentos que resolveram o problema:</b><br/>";
+
+noteItem = this.Items[this.H["solution_resolution"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/><br/><br/>";
+}
+
+
+}
+
+// General: Check Func
+td.TSApplied = function () {
+if ((this.Items[this.H["solution_ts"]].HasValue())
+|| (this.Items[this.H["solution_additional"]].HasValue())
+) return true;
+
+return false;
+}
+
+ 
+
+templateName = "msa";
+var td = new TemplateData("MSA");
+templates[templateName] = td;
+
+// MSA: Define Blocks
+ 
+td.AddItemRadioButton("activity", "lastsignin", true, "When was the last time the customer was able to access the account?", function () {
+var txt = "";
+
+LastSigninDisplay = new Array(
+"Recent – Within the last week"
+, "Not too recent – Within the last month"
+, "A long time ago - the customer does not remember or is not sure");
+LastSigninNotes = new Array(
+"Customer was able to sign in within the last 7 days"
+, "Customer was able to sign in within the last 30 days"
+, "Customer does not remember the last they were able to sign in");
+
+txt += CreateRadioTable(this.Title, this.Name, this.IsMandatory, LastSigninDisplay, LastSigninNotes, 1);
+
+return txt;
+});
+td.AddItemRadioButton("activity", "reapeatcaller", true, "Did the customer contact Microsoft about this issue already?", function () {
+var txt = "";
+itemListToDisplay = new Array("Yes - it's a repeat caller", "No - this is their first call");
+itemListToOutput = new Array("The customer has contacted in the past about this issue already", "");
+txt += CreateRadioTable(this.Title, this.Name, this.IsMandatory, itemListToDisplay, itemListToOutput, 1);
+return txt;
+});
+td.AddItemRadioButton("activity", "resetperformed", true, "Did the customer try to reset the password already on their own?", function () {
+var txt = "";
+itemListToDisplay = new Array("Yes - Customer has already tried a password Reset", "No - Customer has not tried a password Reset");
+itemListToOutput = new Array("Customer has already tried a password Reset", "");
+txt += CreateRadioTable(this.Title, this.Name, this.IsMandatory, itemListToDisplay, itemListToOutput, 1);
+return txt;
+});
+td.AddItemRadioButton("activity", "loginacccom", false, " If the customer is unable to log into Windows using a MSA, can they successfully log into account.microsoft.com?", function () {
+txt = "";
+itemListToDisplay = new Array("Yes - The same MSA can successfully log into account.microsoft.com", "No - The same MSA fails for Windows sign in and fails on account.microsoft.com", "Not Applicable - The customer does not have another device to test.");
+itemListToOutput = new Array("MSA works on account.microsoft.com, but fails with Windows sign in.", "The same MSA fails for Windows sign in and fails on account.microsoft.com", "");
+txt += CreateRadioTable(this.Title, this.Name, this.IsMandatory, itemListToDisplay, itemListToOutput, 1);
+return txt;
+});
+td.AddItemDropDownList("blocker", "blockmsg", true, "What is the error/blocking message?", function () {
+var txt = "";
+itemListToDisplay = new Array("", "That password is incorrect", "Sign-in blocked", "It looks like someone else might be using your account", "Microsoft account doesn't exist", "You need a parent's permission", "Other error message");
+itemListToOutput = new Array("", "Blocking message: That password is incorrect", "Blocking message: Sign-in blocked", "Blocking message: It looks like someone else might be using your account", "Blocking message: Microsoft account doesn't", "Blocking message: You need a parent's permission (GDRP)", "Blocking message: ");
+txt += CreateDropDownTable(this.Title, this.Name, this.IsMandatory, itemListToDisplay, itemListToOutput);
+return txt;
+});
+td.AddItemTextArea("blocker", "blockmsgdetail", false, "Additional error or blocking message details:", function () {
+return CreateTextAreaBlock(this.Title, this.Name, this.IsMandatory);
+});
+td.AddItemDropDownList("solution", "screcieved", false, "Did the customer request and receive the security code as expected?", function () {
+var txt = "";
+itemListToDisplay = new Array("", "Yes - the customer is able to receive a security code", "No - the customer is not able to receive a security code for unknown reasons.", "No - the alternative contact information are no longer accessible", "Not Applicable");
+itemListToOutput = new Array("", "The customer is able to receive a security code", "The customer is not able to receive a security code for unknown reason.", "The customer is not able to receive a security code because their contact information are no longer accessible.", "");
+txt += CreateDropDownTable(this.Title, this.Name, this.IsMandatory, itemListToDisplay, itemListToOutput);
+return txt;
+});
+td.AddItemRadioButton("solution", "scresult", false, "Did the customer receive the security code, but the code did work?", function () {
+txt = "";
+itemListToDisplay = new Array("Yes - Code worked, and it resolved the issue", "Yes - Code worked, but it did not resolve the issue.", "No - Code was rejected.", "Not Applicable - MSA Account does not exist");
+itemListToOutput = new Array("The customer received a security code and was used to resolve the issue.", "The customer received a security code, but issue persisted.", "The customer received a security code, but the code did not work.", "");
+txt += CreateRadioTable(this.Title, this.Name, this.IsMandatory, itemListToDisplay, itemListToOutput, 1);
+return txt;
+});
+td.AddItemRadioButton("solution", "redirect", true, "Are you redirecting the customer to the Account Recovery form (ACSR)?", function () {
+txt = "";
+itemListToDisplay = new Array("Yes - the customer already submitted a form before contacting support", "No - It was not needed", "No - Redirect the customer to the account recovery form (ACSR)");
+itemListToOutput = new Array("The customer has already submitted a recovery via ACSR", "", "Redirected customer to account recovery (ACSR)");
+txt += CreateRadioTable(this.Title, this.Name, this.IsMandatory, itemListToDisplay, itemListToOutput, 1);
+return txt;
+});
+td.AddItemRadioButton("solution", "resolution", true, "Did you resolve the issue?", function () {
+var txt = "";
+itemListToDisplay = new Array("Yes - Customer is now able to access their account", "No- Customer is still not able to access their account");
+itemListToOutput = new Array("Issue Resolved - Customer is now able to access their account", "Issue Not Resolved - the customer is still not able to sign in");
+txt += CreateRadioTable(this.Title, this.Name, this.IsMandatory, itemListToDisplay, itemListToOutput, 1);
+return txt;
+});
+td.AddItemTextArea("solution", "res_additional", false, "Additional Notes and Comments", function () {
+return CreateTextAreaBlock(this.Title, this.Name, this.IsMandatory);
+});
+
+// MSA: GenerateNotes
+td.GenerateNotes_Action = function () {
+var txt = "";
+
+noteItem = this.Items[this.H["activity_signinfrom"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+noteItem = this.Items[this.H["activity_lastsignin"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+noteItem = this.Items[this.H["activity_reapeatcaller"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+noteItem = this.Items[this.H["activity_resetperformed"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+ 
+noteItem = this.Items[this.H["activity_loginacccom"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+return txt;
+}
+td.GenerateNotes_Blocker = function () {
+var txt = "";
+ 
+noteItem = this.Items[this.H["blocker_blockmsg"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+noteItem = this.Items[this.H["blocker_blockmsgdetail"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+noteItem = this.Items[this.H["solution_screcieved"]].GenerateNote();
+if (noteItem.item.indexOf("No") == 0) {
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+}
+
+noteItem = this.Items[this.H["solution_scresult"]].GenerateNote();
+if (noteItem.item.indexOf("No") == 0) {
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+}
+
+return txt;
+}
+td.GenerateNotes_Solution = function () {
+var txt = "";
+
+noteItem = this.Items[this.H["solution_screcieved"]].GenerateNote();
+if (noteItem.item.indexOf("Yes") == 0) {
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+}
+
+noteItem = this.Items[this.H["solution_scresult"]].GenerateNote();
+if (noteItem.item.indexOf("Yes") == 0) {
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+}
+
+noteItem = this.Items[this.H["solution_redirect"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+noteItem = this.Items[this.H["solution_resolution"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+noteItem = this.Items[this.H["solution_res_additional"]].GenerateNote();
+if (noteItem.text != "") {
+txt += noteItem.text + "<br/>";
+}
+
+return txt;
+}
+ 
+
+//--></script>
+    <script language="JavaScript"><!--//
+
+// Get QueryString
+function getQueryString(field) {
+var href = window.location.href;
+var reg = new RegExp('[?&]' + field + '=([^&#]*)', 'i');
+var string = reg.exec(href);
+return string ? string[1] : null;
+}
+
+// Sanitize(Replace HTML tag brackets)
+function sanitizeString(txt)
+{
+return txt.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+ 
+// Reset&Copy
+function ResetFields()
+{
+// Clear up clipboard
+newClearClipboard();
+
+// Reset Fields
+templates[currentTemplate].ResetFields();
+updated = false;
+notesChecked = false;
+ 
+// Open Activity/Blocker tab
+ExpandSectionTo("actionblocker");
+}
+function newClearClipboard() {
+var range = document.createRange();
+range.selectNode(document.getElementById("cn_empty"));
+window.getSelection().removeAllRanges();
+window.getSelection().addRange(range);
+document.execCommand('copy');
+}
+function oldClearClipboard() {
+window.clipboardData.clearData();
+}
+function CopyClipboard()
+{
+newCopyToClipboard();
+}
+function newCopyToClipboard()
+{
+var range = document.createRange();
+range.selectNode(document.getElementById("cn_output"));
+window.getSelection().removeAllRanges();
+window.getSelection().addRange(range);
+document.execCommand('copy');
+}
+function oldCopyToClipboard() {
+var textRange = document.body.createTextRange();
+textRange.moveToElementText(document.getElementById("cn_output"));
+textRange.execCommand("Copy");
+}
+
+// Change Template/Tab
+function ApplyTemplate(templateToApply)
+{
+if (currentTemplate == templateToApply) {
+return;
+}
+
+if (updated) {
+if (!confirm("All fields you have edited in \"{0}\" would be removed.  Do you wish to continue?".format(templates[currentTemplate].Name)))
+{
+return;
+}
+}
+
+if (currentTemplate != "") {
+document.getElementById("tab_template_" + currentTemplate).style.backgroundColor = "white";
+}
+document.getElementById("tab_template_" + templateToApply).style.backgroundColor = "lightgray";
+
+
+var actionblockerHTML, solutionHTML;
+actionblockerHTML = CreateActivityBlockerSection(templateToApply);
+solutionHTML = CreateSolutionSection(templateToApply);
+
+document.getElementById('section_actionblocker').innerHTML = actionblockerHTML;
+document.getElementById('section_solution').innerHTML = solutionHTML;
+
+currentTemplate = templateToApply;
+ 
+ChangeTabVisibility("solution", false);
+ChangeTabVisibility("output", false);
+ChangeTabVisibility("actionblocker", true);
+
+currentTab = "actionblocker";
+
+updated = false;
+notesChecked = false;
+}
+function ChangeTabVisibility(sel, setToForeground)
+{
+tabName = "tab_" + sel;
+tabBodyName = "section_" + sel;
+tabBodyTable = "table_" + sel;
+
+if (setToForeground) {
+document.getElementById(tabBodyTable).style.display = "table";
+document.getElementById(tabName).style.backgroundColor = "lightgray";
+document.getElementById(tabBodyName).style.height = "100%";
+document.getElementById(tabBodyName).style.visibility = "visible";
+document.getElementById(tabBodyName).style.transition = "opacity 500ms linear";
+document.getElementById(tabBodyName).style.opacity = 1;
+}
+else
+{
+document.getElementById(tabBodyTable).style.display = "none";
+document.getElementById(tabName).style.backgroundColor = "white";
+document.getElementById(tabBodyName).style.height = "0px";
+document.getElementById(tabBodyName).style.visibility = "hidden";
+document.getElementById(tabBodyName).style.transition = "none";
+document.getElementById(tabBodyName).style.opacity = 0;
+}
+}
+function ExpandSectionTo(tabToExpand) {
+
+if (tabToExpand == "output")
+{
+GenerateNotes();
+}
+
+ChangeTabVisibility(currentTab, false);
+ChangeTabVisibility(tabToExpand, true);
+
+currentTab = tabToExpand;
+
+}
+ 
+// Update/Check Items
+function fieldUpdated()
+{
+updated = true;
+if (notesChecked)
+templates[currentTemplate].MandatoryFieldCheck();
+}
+function getCheckBoxItemChosen(itemBase, indents) {
+var txt = "";
+
+for (var i = 0; true; i++) {
+tmp = itemBase + (i + 1);
+if (document.getElementById(tmp) == null) {
+break;
+} else if (document.getElementById(tmp).checked) {
+if (i > 0) {
+txt += "<br/>";
+}
+for (var j = 0; j < indents; j++) {
+txt += "&nbsp;";
+}
+txt += "-&nbsp;" + document.getElementById(tmp).value;
+}
+}
+
+if (txt == "") {
+return null;
+}
+
+return { lbl: "", res: txt };
+}
+function getRadioItemChosen(itemBase) {
+for (var i = 0; true; i++) {
+tmp = itemBase + (i + 1);
+if (document.getElementById(tmp) == null) {
+break;
+} else if (document.getElementById(tmp).checked) {
+var textinlabel = document.getElementById("for_" + tmp).innerText;
+return { lbl: textinlabel, res: document.getElementById(tmp).value };
+}
+}
+
+return null;
+}
+function getDropDownItemSelected(itemName) {
+var selItem = document.getElementById(itemName);
+if (selItem == null) {
+return null;
+}
+
+var o = selItem.options[selItem.selectedIndex];
+var t = o.label;
+var v = o.value;
+if ((t == "") || (v == "")) {
+return null;
+}
+return { lbl: t, res: v };
+}
+function GenerateNotes()
+{
+var tmp;
+var txt = "";
+
+if (updated) {
+document.getElementById('reset_button').disabled = false;
+}
+else {
+document.getElementById('reset_button').disabled = true;
+}
+ 
+// Mandatory check
+var errMsg = templates[currentTemplate].MandatoryFieldCheck();
+if (!errMsg) {
+document.getElementById('copy_button').disabled = false;
+}
+else {
+document.getElementById('copy_button').disabled = true;
+document.getElementById('cn_output').innerHTML = errMsg;
+notesChecked = true;
+return;
+}
+
+// Output Activity
+txt += "<b>Activity</b><br/>";
+txt += templates[currentTemplate].GenerateNotes_Action();
+txt += "<br/>";
+
+
+// Output Blocker
+txt += "<b>Blocker</b><br/>";
+txt += templates[currentTemplate].GenerateNotes_Blocker();
+txt += "<br/>";
+
+
+// Output Solution
+txt += "<b>Solution</b><br/>";
+txt += templates[currentTemplate].GenerateNotes_Solution();
+txt += "<br/>";
+
+txt += "#NeoCaseNote " + verNo;
+
+txt = txt.replace(/\r?\n/g, "<br />");
+
+document.getElementById('cn_output').innerHTML = txt;
+}
+
+// Load Forms
+function LoadOutputSection()
+{
+var txt = "";
+
+txt += "<table id=\"table_output\" style= \"height:100%;width:95%\">";
+
+// Description
+txt += "<tr valign=\"top\" style=\"height:20px\"><td colspan=2>&nbsp;</td></tr>";
+txt += "<tr valign=\"top\" style=\"height:50px;\"><td colspan=2 style=\"padding-bottom: 20px\">";
+txt += "Toda a informação que consta no Case Notes foi fornecida através da descrição feita em Activity, Blocker e Solution."
++ "  Se estiver tudo certo, clique em “Copy” e cole as informações copiadas no ASD.<br />";
+txt += "</td ></tr > ";
+
+// CaseNote Output + Buttons
+txt += "<tr valign=\"top\"><td align=\"center\" style=\"padding-bottom: 20px\">";
+txt += "<div id=\"cn_output\" style=\"text-align:left;border:1px solid black; min-height:300px; min-width: 600px\"></div><span id=\"cn_empty\"> </span><br />";
+txt += "</td>";
+txt += "<td valign=\"top\">"
++ "<input type=\"button\" id=\"reset_button\" value=\"Reset\" style=\"width:60px\" /><br /><br />"
++ "<input type=\"button\" id=\"copy_button\" value=\"Copy\" style=\"width:60px\" /></td>";
+txt += "</tr>";
+
+// Bottom Prev/Next buttons
+txt += "<tr valign=\"bottom\"><td colspan=2 align=\"right\" style=\"padding-bottom: 30px\">";
+txt += "<input type=\"button\" value=\"Prev\" style=\"width:60px\" onclick=\"JavaScript: ExpandSectionTo('solution')\" />";
+txt += "<input type=\"button\" value=\"Next\" style=\"width:60px;\" disabled=\"disabled\" /><br />";
+txt += "</td></tr>";
+
+txt += "</table >";
+ 
+document.getElementById('section_output').innerHTML = txt;
+}
+ 
+// Create Forms
+function CreateActivityBlockerSection(template) {
+var txt = "";
+
+txt += "<table id=\"table_actionblocker\" align=\"center\" style=\"height:100%;width:95% \">";
+
+txt += "<tr valign= \"top\"><td>&nbsp;</td></tr>";
+
+// Activity
+txt += templates[template].GenerateSection_Action();
+ 
+// Blocker
+txt += templates[template].GenerateSection_Blocker();
+
+// Bottom Prev/Next buttons
+txt += "<tr valign=\"bottom\"><td align=\"right\" style=\"padding-bottom: 30px\">";
+txt += "<input type=\"button\" value=\"Prev\" style=\"width:60px;\" disabled=\"disabled\" />";
+txt += "<input type=\"button\" value=\"Next\" style=\"width:60px\" onclick=\"JavaScript: ExpandSectionTo('solution')\" /><br />";
+txt += "</td></tr>";
+
+txt += "</table>";
+
+return txt;
+}
+function CreateSolutionSection(template) {
+var txt = "";
+
+txt += "<table id=\"table_solution\" style=\"height:100%;width:95%\">";
+
+txt += "<tr valign= \"top\"><td>&nbsp;</td></tr>";
+
+// Solution
+txt += templates[template].GenerateSection_Solution();
+
+// Bottom Prev/Next buttons
+txt += "<tr valign=\"bottom\"><td align=\"right\" style=\"padding-bottom: 30px\">";
+txt += "<input type=\"button\" value=\"Prev\" style=\"width:60px\" onclick=\"JavaScript: ExpandSectionTo('actionblocker')\" />";
+txt += "<input type=\"button\" value=\"Next\" style=\"width:60px\" onclick=\"JavaScript: ExpandSectionTo('output')\" /><br />";
+txt += "</td></tr>";
+
+txt += "</table>";
+
+return txt;
+}
+function CreateTextAreaBlock(itemDescription, itemBase, isMandatory) {
+var txt = "";
+
+if (itemDescription != "") {
+txt += "<span>{0}</span>".format(itemDescription);
+}
+if (isMandatory) {
+txt += "&nbsp;<span style='color:red'>*</span>";
+}
+if (txt != "") {
+txt += "<br />";
+}
+
+txt += "<textarea id=\"{0}\" cols=\"80\" rows=\"6\" onkeyup=\"JavaScript:fieldUpdated()\"></textarea><br />".format(itemBase);
+
+return txt;
+}
+function CreateCheckBoxTable(itemDescription, itemBase, isMandatory, itemList, itemValueList, colspan) {
+if ((itemList == null) || (itemValueList == null) || ((itemList.length <= 0)) || ((itemList.length != itemValueList.length))) {
+return;
+}
+
+var txt = "";
+
+txt += "<span>{0}</span>".format(itemDescription);
+if (isMandatory)
+txt += "&nbsp;<span style='color:red'>*</span>";
+txt += "<br/>";
+
+txt += "<table id=\"{0}\">".format(itemBase);
+ 
+txt += "<tr>";
+for (var i = 0; i < itemList.length; i++) {
+txt += "<td><input type=\"checkbox\" id=\"{0}{1}\" onclick=\"JavaScript: fieldUpdated()\" value=\"{2}\" />".format(itemBase, i + 1, itemValueList[i]);
+txt += "<label for=\"{0}{1}\">{2}</label></td>".format(itemBase, i + 1, itemList[i]);
+
+if (i + 1 == itemList.length) {
+txt += "</tr>";
+}
+else {
+if (i % colspan == colspan - 1) {
+txt += "</tr><tr>";
+}
+}
+}
+
+txt += "</table>";
+
+return txt;
+}
+function CreateRadioTable(itemDescription, itemBase, isMandatory, itemList, itemValueList, colspan) {
+if ((itemList == null) || (itemValueList == null) || ((itemList.length <= 0)) || ((itemList.length != itemValueList.length))) {
+return;
+}
+
+var txt = "";
+
+txt += "<span>{0}</span>".format(itemDescription);
+if (isMandatory)
+txt += "&nbsp;<span style='color:red'>*</span>";
+txt += "<br/>";
+
+txt += "<table id=\"{0}\">".format(itemBase);
+
+txt += "<tr>";
+for (var i = 0; i < itemList.length; i++) {
+txt += "<td><input type=\"radio\" id=\"{0}{1}\" name=\"{0}\" onclick=\"JavaScript: fieldUpdated()\" value=\"{2}\" />".format(itemBase, i + 1, itemValueList[i]);
+txt += "<label id=\"for_{0}{1}\" for=\"{0}{1}\">{2}</label></td>".format(itemBase, i + 1, itemList[i]);
+
+if (i + 1 == itemList.length) {
+txt += "</tr>";
+}
+else {
+if (i % colspan == colspan - 1) {
+txt += "</tr><tr>";
+}
+}
+}
+
+txt += "</table>";
+
+return txt;
+}
+function CreateDropDownTable(itemDescription, itemName, isMandatory, itemList, itemValueList) {
+if ((itemList == null) || (itemValueList == null) || ((itemList.length <= 0)) || ((itemList.length != itemValueList.length))) {
+return;
+}
+
+var txt = "";
+ 
+txt += "<table><tr><td align=\"center\"><span>{0}</span>".format(itemDescription);
+if (isMandatory)
+txt += "&nbsp;<span style='color:red'>*</span>";
+txt += " <br /> <select id=\"{0}\" onchange=\"JavaScript: fieldUpdated()\">".format(itemName);
+
+for (var i = 0; i < itemList.length; i++) {
+txt += "<option label=\"{0}\" value=\"{1}\" />".format(itemList[i], itemValueList[i]);
+}
+
+txt += "</select></td></tr></table>";
+
+return txt;
+}
+
+// Create Dummy Forms
+function CreateDummyActivityBlockerSection() {
+var txt = "<table id=\"table_actionblocker\" align=\"center\" style=\"height:100%;width:95% \"><tr><td align=\"center\"><h1>Comming soon.</h1></td></tr></table>";
+
+return txt;
+}
+function CreateDummySolutionSection() {
+var txt = "<table id=\"table_solution\" align=\"center\" style=\"height:100%;width:95% \"><tr><td align=\"center\"><h1>Comming soon.</h1></td></tr></table>";
+
+return txt;
+}
+
+// Onload
+function BodyOnload()
+{
+// Load Output Section
+LoadOutputSection();
+
+definirDataAtual();
+
+// Assign Events to Reset/Copy Button in Output Section
+document.getElementById("copy_button").addEventListener('click', CopyClipboard, false);
+document.getElementById("reset_button").addEventListener('click', ResetFields, false);
+
+var w = getQueryString("width");
+document.getElementById("topTable").width = (w == null) ? (1024) : (w);
+
+var tmpl = getQueryString("template");
+if ((tmpl == null)||(document.getElementById("tab_template_" + tmpl) == null)) {
+tmpl = "general";
+}
+
+ApplyTemplate(tmpl);
+}
+ 
+//--></script>
+    <style type="text/css">
+        a:link,
+        a:visited,
+        a:active,
+        a:hover {
+            color: royalblue
+        }
+
+        span {
+            font-weight: bold;
+            font-size: large;
+        }
+
+        h1,
+        span,
+        input,
+        td {
+            font-family: 'Segoe UI'
+        }
+
+        td#tab_actionblocker,
+        td#tab_solution,
+        td#tab_output {
+            font-weight: bold;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        td#tab_template_general,
+        td#tab_template_AB,
+        td#tab_template_msa,
+        td#tab_template_office {
+            font-weight: bold;
+            font-size: 20px;
+            cursor: pointer;
+            border-left: 2px solid black;
+            border-bottom: 2px solid black;
+        }
+
+        div#section_actionblocker,
+        div#section_solution,
+        div#section_output {
+            height: 0px;
+            opacity: 0;
+        }
+    </style>
+    <!--[if gte mso 9]><![endif]-->
+
+    <style>
+        .botao {
+            color: #fff;
+            background-color: #0d6efd;
+            text-align: center;
+            width: 200px;
+            height: 50px;
+            margin: 10px;
+            transition: background-color 0.3s;
+            font-weight: bold;
+            font-size: 20px;
+            cursor: pointer;
+            border-left: 2px solid black;
+            border-bottom: 2px solid black;
+        }
+
+        .botao:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .botao-reset {
+            color: #fff;
+            text-align: center;
+            width: 200px;
+            height: 50px;
+            margin: 10px;
+            transition: background-color 0.3s;
+            font-weight: bold;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #dc3545;
+            border: 1px solid transparent;
+            border-radius: 0.2em;
+        }
+
+        .botao-reset:hover {
+            background-color: #c82333;
+            border-color: #dc3545;
+        }
+
+        .botaoModal {
+            color: #fff;
+            background-color: #0d6efd;
+            border: 1px solid transparent;
+            border-radius: .25rem;
+            text-align: center;
+            width: 200px;
+            height: 50px;
+            font-size: 1em;
+            cursor: pointer;
+            margin: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .botaoModal:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            margin: 10px;
+            border-radius: .25rem;
+            border: 1px solid #0d6efd;
+        }
+
+        #output {
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+
+        .highlight {
+            color: #0d6efd;
+            font-weight: bold;
+        }
+
+        .modal {
+            font-family: 'Open Sans', Roboto, system-ui, BlinkMacSystemFont, 'Segoe UI', Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #212121;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            min-height: 60vh;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .openModalBtn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .centralizado {
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .styleData {
+            margin: 15px 0px;
+        }
+
+        .styleData p {
+            margin: 0;
+            color: rgba(255, 0, 0, 0.631);
+        }
+
+        .alertacampo {
+            border: 2px solid rgba(255, 0, 0, 0.467) !important;
+        }
+    </style>
+
+
+</head>
+
+<body onload="JavaScript:BodyOnload()">
+    <h1 align="center" id="titleName">Case Note Tool MLCS</h1>
+
+    <p></p>
+
+    <table align="center" border="0" cellpadding="0" cellspacing="0" id="topTable" width="1024">
+        <tbody>
+            <tr style="min-height:35px;background-color:transparent">
+                <td style="min-width:90px;border-bottom:2px solid black;"></td>
+                <td rowspan="5">
+                    <table align="center" cellspacing="0" style="border:1px solid black;" width="1024">
+                        <tbody>
+                            <tr>
+                                <td align="center" id="tab_actionblocker"
+                                    onclick="JavaScript:ExpandSectionTo('actionblocker')"
+                                    style="border:1px solid black;" width="33%">Activity&nbsp;&amp;&nbsp;Blocker</td>
+                                <td align="center" id="tab_solution" onclick="JavaScript:ExpandSectionTo('solution')"
+                                    style="border:1px solid black;" width="33%">Solution</td>
+                                <td align="center" id="tab_output" onclick="JavaScript:ExpandSectionTo('output')"
+                                    style="border:1px solid black;" width="33%">Your Case notes</td>
+                            </tr>
+                            <tr>
+                                <td align="center" colspan="3"
+                                    style="width:100%;height:800px;vertical-align:top;border:1px solid black;">
+                                    <div id="section_actionblocker" style="width:100%"></div>
+
+                                    <div id="section_solution" style="width:100%"></div>
+
+                                    <div id="section_output" style="width:100%"></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr style="min-height:32px;">
+                <td id="tab_template_general" onclick="JavaScript:ApplyTemplate('general', false)">Windows</td>
+            </tr>
+            <tr style="min-height:32px;">
+                <td id="tab_template_office" onclick="JavaScript:ApplyTemplate('office', false)">Office</td>
+            </tr>
+            <tr style="min-height:32px;">
+                <td id="openModal" class="botao">Templates</td>
+            </tr>
+            <tr style="height:600px;background-color:transparent">
+                <td></td>
+            </tr>
+            <tr>
+            </tr>
+        </tbody>
+    </table>
+
+    <div align="center" style="color:red">* Required field</div>
+
+
+    <p></p>
+    <div id="mModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <div class="centralizado">
+                <h2>Templates</h2>
+                <input type="text" id="customer" placeholder="Nome do Cliente (apenas letras)"
+                    oninput="atualizarSaida(); validarNome()">
+                <input type="text" id="ticket" placeholder="Protocolo (apenas números)"
+                    oninput="validarProtocolo(); atualizarSaida()">
+                <input type="text" id="linkd" placeholder="Link DTM">
+                <input type="text" id="produto" placeholder="Produto Reembolso">
+
+                <div id="output"></div>
+
+                <div class="styleData">
+                    <label for="dataHora">Data e Hora para CBA:</label>
+                    <input type="datetime-local" id="dataHora">
+                    <p>Data e hora de retorno para Template de CBA</p>
+                </div>
+
+                <div>
+                    <input class="botaoModal" type="button" value="Protocolo" onclick="gerarEmailProtocolo()">
+                    <input class="botaoModal" type="button" value="Reembolso" onclick="gerarReembolso1()">
+                    <input class="botaoModal" type="button" value="Strike 1 - CBA" onclick="gerarStrike1CB()">
+                    <input class="botaoModal" type="button" value="Strike 1 - Interrompida" onclick="gerarStrike1()">
+                    <input class="botaoModal" type="button" value="Strike 2" onclick="gerarStrike2()">
+                    <input class="botaoModal" type="button" value="Strike 3" onclick="gerarStrike3()">
+                    <input class="botaoModal" type="button" value="Caso solucionado" onclick="gerarSolucionado()">
+                    <input class="botaoModal" type="button" value="ATO (Account Takeover)" onclick="gerarATO()">
+                </div>
+
+                <div>
+                    <input class="botao botao-reset" type="button" value="RESET" onclick="resetar()">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const hoje = new Date();
+        const ano = hoje.getFullYear();
+        const mes = String(hoje.getMonth() + 1).padStart(2, '0'); // Janeiro é 0!
+        const dia = String(hoje.getDate()).padStart(2, '0');
+        const hora = String(hoje.getHours()).padStart(2, '0');
+        const minuto = String(hoje.getMinutes()).padStart(2, '0');
+
+        const dataFormatada = `${dia}/${mes}/${ano}`;
+        var novaData;
+        // Modal
+
+        document.getElementById('openModal').onclick = function () {
+            document.getElementById('mModal').style.display = "block";
+        }
+
+        document.getElementById('closeModal').onclick = function () {
+            document.getElementById('mModal').style.display = "none";
+        }
+
+        window.onclick = function (event) {
+            if (event.target == document.getElementById('mModal')) {
+                document.getElementById('mModal').style.display = "none";
+            }
+        }
+
+        //
+
+        function gerarEmailProtocolo() {
+            var customer = document.getElementById("customer").value;
+            var ticket = document.getElementById("ticket").value;
+            if (!customer || ticket.length < 10) {
+                alert("Por favor, preencha o nome do cliente e o número de protocolo.")
+                return;
+            }
+            var emailContent = `<html> <head>     <meta http-equiv="Content-Type" content="text/html; charset=UTF-16LE">     <title>Protocolo</title>     <style>         * {             font-family: Segoe UI;             border-collapse: collapse;         }         div {             font-family: Segoe UI;             font-size: 15.5px;             color: grey;         }     </style> </head> <body>     <img         src="https://url.de.m.mimecastprotect.com/s/XXgTC28ymRTVEwj5nCxcZi5sIti?domain=compass.microsoft.com"><br>     <br>     <div>         Olá ${customer}.<br><br>         Obrigado por entrar em contato com o Atendimento ao cliente da Microsoft. <br><br>         Através do seu último contato no dia ${dataFormatada}, foi gerado o número de Protocolo de Atendimento: <strong>${ticket}.</strong><br>         Caso tenha qualquer dúvida ou dificuldade, não deixe de entrar em contato conosco através de um de nossos canais         de atendimento, e mencionar o Protocolo acima.<br><br>         Na Microsoft trabalhamos para a sua satisfação e consideramos muito importante suas sugestões, reclamações ou         quaisquer outras informações.<br><br>         Desde já agradecemos a compreensão e colaboração.<br>         Obrigado por usar o Suporte Microsoft.<br><br>     </div>     <div>         <i>Já conhece o Microsoft Copilot, a nova Inteligência Artificial da Microsoft? <a                 href="https://url.de.m.mimecastprotect.com/s/E49SC36znluXRQBDLu5fliQhliI?domain=microsoft.com" target="_blank"> Clique Aqui e Saiba                 Mais</a></i><br>         <i>Acesse a página do Windows e conheça as ofertas para aquisição do produto. <a                 href="https://url.de.m.mimecastprotect.com/s/bALjC46Ao8uz71o4LhqhVi4CTrr?domain=microsoft.com" target="_blank"> Clique Aqui </a></i><br>         <i>Acesse e conheça as novidades e promoções disponíveis para o Pacote Office. <a                 href="https://url.de.m.mimecastprotect.com/s/gp_BC57Bp8hMWGvkqTPiZikYVst?domain=aka.ms" target="_blank"> Clique Aqui </a></i><br><br>     </div>     <div>         <strong>Suporte ao Cliente Microsoft</strong><br><br>         <u>Nosso horário de atendimento<br></u>         Segunda à Sexta (Incluindo feriados) Das 09:00 às 21:00.<br>         Sábados e Domingos (Incluindo feriados) Das 10:00 às 18:00.<br>         <a href=https://url.de.m.mimecastprotect.com/s/JInNC6WDq6HPGKDLQTwsYi5IHMM?domain=aka.ms target=_blank>Entre em Contato com o Suporte da             Microsoft</a>     </div>     <div>         <p>             O número do seu pedido de assistência é o <strong>${ticket}</strong>, caso necessite.         </p>     </div>     <div>         <p>             Encontre soluções de forma simples na nova comunidade online da Microsoft. Conheça a Comunidade Microsoft em             <a href="https://url.de.m.mimecastprotect.com/s/WrGRC79Er6uzWkqG3hGtZiosrJN?domain=answers.microsoft.com" target="_blank">https://url.de.m.mimecastprotect.com/s/WrGRC79Er6uzWkqG3hGtZiosrJN?domain=answers.microsoft.com/</a>         </p>     </div>     <br>         <div style="background-color:#FFFFFF;font-size: 12px;">             <strong>Observação:</strong> Será necessário entrar com uma conta Microsoft. Se não tiver uma conta             Microsoft ou não consegue acessá-la, poderá criar uma conta temporária pelo link <a                 href=https://url.de.m.mimecastprotect.com/s/Hk3cC83GvqsXwRrNnuYuKiynxCL?domain=microsoft.com                 target=_blank> Microsoft Outlook | Criar conta de email | Fazer Email grátis</a>. Caso não entre com             sua conta Microsoft, você poderá ser direcionado para atendimento de suporte por chat.             <br>             Os sites de terceiros mencionados nos e-mails que são enviados pela Microsoft, são produzidos por             empresas independentes. A Microsoft não oferece garantia, implícita ou não, com relação ao desempenho ou             à confiabilidade desses produtos.             A Microsoft fornece informações para o contato com terceiros para ajudá-lo a encontrar suporte técnico.             Esses contatos podem ser alterados sem aviso prévio. A Microsoft não garante a precisão dessas             informações para contato com terceiros.<br><br>             <strong>Confidencialidade:</strong> A informação contida nesta mensagem de e-mail, incluindo quaisquer             anexos, é confidencial e está reservada apenas à pessoa ou entidade para a qual foi endereçada. Se você             não é o destinatário ou a pessoa responsável por encaminhar esta mensagem ao destinatário, você está,             por meio desta, notificado que não deverá rever, retransmitir, imprimir, copiar, usar ou distribuir esta             mensagem de e-mail ou quaisquer anexos. Caso você tenha recebido esta mensagem por engano, por favor,             contate o remetente imediatamente e apague esta mensagem de seu computador ou de qualquer outro banco de             dados. Encontre soluções de forma simples na nova comunidade online da Microsoft. Conheça a Comunidade             Microsoft em <a href=https://url.de.m.mimecastprotect.com/s/RkIRC160lju6EYRJvI4U4iVmpeQ?domain=answers.microsoft.com target=_blank>https://url.de.m.mimecastprotect.com/s/RkIRC160lju6EYRJvI4U4iVmpeQ?domain=answers.microsoft.com</a>. Muito             obrigado.<br><br>             Microsoft Corporation<br>             One Microsoft Way<br>             Redmond, WA 98052<br>         </div><br>         <strong>Fale conosco: </strong>         <a href="https://url.de.m.mimecastprotect.com/s/DkeMC99Jw8uzYB14ohRCKiqdbwl?domain=support.microsoft.com" target="_blank">             https://url.de.m.mimecastprotect.com/s/DkeMC99Jw8uzYB14ohRCKiqdbwl?domain=support.microsoft.com/</a><br> </body>`;
+            openInNewWindow(emailContent, "Protocolo")
+        }
+
+        function gerarReembolso1() {
+            var customer = document.getElementById("customer").value;
+            var ticket = document.getElementById("ticket").value;
+            var produto = document.getElementById("produto").value;
+            if (!customer || ticket.length < 10 || !produto) {
+                alert("Por favor, preencha o nome do cliente, número de protocolo e o produto.")
+                return;
+            }
+            var emailContent = `<html> <head> <title> Suporte de Cobrança Microsoft BR - ${ticket}</title> </head><body> <font face='Segoe Ui Light' size=3.5> <img src="https://url.de.m.mimecastprotect.com/s/XXgTC28ymRTVEwj5nCxcZi5sIti?domain=compass.microsoft.com"<br><br> <br> Olá ${customer}, <br><br> Obrigado por entrar em contato com o suporte de cobrança da Microsoft. <br><br> Aqui está um resumo dos pontos chave da solicitação de suporte, para seus registros. <br><br> <strong>Necessidade:</strong> <br> Cancelamento de seu pedido. <br><br> <strong>Resultado:</strong> <br> Seu pedido de compra do produto <strong> ${produto}</strong> foi cancelado. Se você já foi cobrado, você receberá um reembolso. <br><br> Este valor será adicionado como crédito no mesmo cartão de crédito onde foi efetuado o pagamento e estará disponível para visualização e consulta online, através do site do seu banco/instituição em aproximadamente de <strong> três a cinco dias úteis</strong>. Caso não consiga ter a visualização desse valor na sua atual fatura, por favor, não se preocupe, isto deve acontecer porque o fechamento do cartão aconteceu durante o processamento do seu reembolso e com certeza será disponibilizado na próxima fatura. <br><br> <font size=2> <strong> Um recurso útil para você: </strong></font> <br> Para gerenciar facilmente sua conta da Microsoft, incluindo assinaturas, prêmios, gerenciamento da família, opções de pagamento e compras, faça logon em: <a href= https://url.de.m.mimecastprotect.com/s/ZfhZC08wkgTkr38N6cPFAi9FyYX?domain=account.microsoft.com target="_blank"> https://url.de.m.mimecastprotect.com/s/ZfhZC08wkgTkr38N6cPFAi9FyYX?domain=account.microsoft.com </a> <br><br> Obrigado novamente, <br><br> Suporte Técnico de Garantia Microsoft <br><br> <font size=2> O número de sua solicitação de suporte é ${ticket}, caso você precise dele. </html> `;
+            openInNewWindow(emailContent, "Email 1")
+        }
+
+        function gerarStrike1CB() {
+            var customer = document.getElementById("customer").value;
+            var ticket = document.getElementById("ticket").value;
+            if (!customer || ticket.length < 10) {
+                alert("Por favor, preencha o nome do cliente e o número de protocolo.")
+                return;
+            }
+            var emailContent = `<html> <head>   <meta http-equiv="Content-Type" content="text/html; charset=UTF-16LE">   <title>Strike 1 - CBA</title>   <style>     * {       font-family: Segoe UI;       border-collapse: collapse;     }     div {       font-family: Segoe UI;       font-size: 15.5px;       color: grey;     }   </style> </head> <body>   <img     src="https://url.de.m.mimecastprotect.com/s/XXgTC28ymRTVEwj5nCxcZi5sIti?domain=compass.microsoft.com"><br>   <br>   <div>     Olá ${customer}.<br><br>     Muito obrigado por contatar o nosso atendimento da Microsoft, lembre-se que logo entraremos em contato em ${novaData} conforme     combinado em ligação.     <br>     <br>     Caso precise acompanhar este chamado, retorne o contato conosco informando o número do atendimento <strong>${ticket}.</strong>     <br>     <br>     Se essa informação não está precisa, por favor, me notifique assim que possível ou retorne o contato, será um prazer     atendê-lo(a) novamente.<br><br>     Uma vez que alcançarmos a solução do comportamento informado, poderemos considerar este atendimento como finalizado     e solucionado. <br><br>     Obrigado por escolher a Microsoft!<br><br>   </div>   <div>     <i>Já conhece o Microsoft Copilot, a nova Inteligência Artificial da Microsoft? <a         href="https://url.de.m.mimecastprotect.com/s/E49SC36znluXRQBDLu5fliQhliI?domain=microsoft.com" target="_blank"> Clique Aqui e Saiba         Mais</a></i><br>     <i>Acesse a página do Windows e conheça as ofertas para aquisição do produto. <a         href="https://url.de.m.mimecastprotect.com/s/bALjC46Ao8uz71o4LhqhVi4CTrr?domain=microsoft.com" target="_blank"> Clique Aqui </a></i><br>     <i>Acesse e conheça as novidades e promoções disponíveis para o Pacote Office. <a href="https://url.de.m.mimecastprotect.com/s/gp_BC57Bp8hMWGvkqTPiZikYVst?domain=aka.ms"         target="_blank"> Clique Aqui </a></i><br><br>   </div>   <div>     <strong>Suporte ao Cliente Microsoft</strong><br><br>     <u>Nosso horário de atendimento<br></u>     Segunda à Sexta (Incluindo feriados) Das 09:00 às 21:00.<br>     Sábados e Domingos (Incluindo feriados) Das 10:00 às 18:00.<br>     <a href=https://url.de.m.mimecastprotect.com/s/JInNC6WDq6HPGKDLQTwsYi5IHMM?domain=aka.ms target=_blank>Entre em Contato com o Suporte da       Microsoft</a>   </div>   <div>     <p>       O número do seu pedido de assistência é o <strong>${ticket}</strong>, caso necessite.     </p>   </div>   <div>     <p>       Encontre soluções de forma simples na nova comunidade online da Microsoft. Conheça a Comunidade Microsoft em       <a href="https://url.de.m.mimecastprotect.com/s/WrGRC79Er6uzWkqG3hGtZiosrJN?domain=answers.microsoft.com/" target="_blank">https://url.de.m.mimecastprotect.com/s/WrGRC79Er6uzWkqG3hGtZiosrJN?domain=answers.microsoft.com/</a>     </p>   </div>   <br>   <div style="background-color:#FFFFFF;font-size: 12px;">     <strong>Observação:</strong> Será necessário entrar com uma conta Microsoft. Se não tiver uma conta     Microsoft ou não consegue acessá-la, poderá criar uma conta temporária pelo link <a       href=https://url.de.m.mimecastprotect.com/s/Hk3cC83GvqsXwRrNnuYuKiynxCL?domain=microsoft.com       target=_blank> Microsoft Outlook | Criar conta de email | Fazer Email grátis</a>. Caso não entre com     sua conta Microsoft, você poderá ser direcionado para atendimento de suporte por chat.     <br>     Os sites de terceiros mencionados nos e-mails que são enviados pela Microsoft, são produzidos por     empresas independentes. A Microsoft não oferece garantia, implícita ou não, com relação ao desempenho ou     à confiabilidade desses produtos.     A Microsoft fornece informações para o contato com terceiros para ajudá-lo a encontrar suporte técnico.     Esses contatos podem ser alterados sem aviso prévio. A Microsoft não garante a precisão dessas     informações para contato com terceiros.<br><br>     <strong>Confidencialidade:</strong> A informação contida nesta mensagem de e-mail, incluindo quaisquer     anexos, é confidencial e está reservada apenas à pessoa ou entidade para a qual foi endereçada. Se você     não é o destinatário ou a pessoa responsável por encaminhar esta mensagem ao destinatário, você está,     por meio desta, notificado que não deverá rever, retransmitir, imprimir, copiar, usar ou distribuir esta     mensagem de e-mail ou quaisquer anexos. Caso você tenha recebido esta mensagem por engano, por favor,     contate o remetente imediatamente e apague esta mensagem de seu computador ou de qualquer outro banco de     dados. Encontre soluções de forma simples na nova comunidade online da Microsoft. Conheça a Comunidade     Microsoft em <a href=https://url.de.m.mimecastprotect.com/s/RkIRC160lju6EYRJvI4U4iVmpeQ?domain=answers.microsoft.com target=_blank>https://url.de.m.mimecastprotect.com/s/RkIRC160lju6EYRJvI4U4iVmpeQ?domain=answers.microsoft.com</a>. Muito     obrigado.<br><br>     Microsoft Corporation<br>     One Microsoft Way<br>     Redmond, WA 98052<br>   </div><br>   <strong>Fale conosco: </strong>   <a href="https://url.de.m.mimecastprotect.com/s/PGIDCgpRj5TqY2kEVsGH8i47zjT?domain=support.microsoft.com" target="_blank">https://url.de.m.mimecastprotect.com/s/PGIDCgpRj5TqY2kEVsGH8i47zjT?domain=support.microsoft.com/</a>   <br> </body>`;
+            openInNewWindow(emailContent, "Strike 1 - CBA")
+        }
+
+        function gerarStrike1() {
+            var customer = document.getElementById("customer").value;
+            var ticket = document.getElementById("ticket").value;
+            if (!customer || ticket.length < 10) {
+                alert("Por favor, preencha o nome do cliente e o número de protocolo.")
+                return;
+            }
+            var emailContent = `<html> <head>   <meta http-equiv="Content-Type" content="text/html; charset=UTF-16LE">   <title>Strike 1 - Ligação interrompida</title>   <style>     * {       font-family: Segoe UI;       border-collapse: collapse;     }     div {       font-family: Segoe UI;       font-size: 15.5px;       color: grey;     }   </style> </head> <body>   <img       src="https://url.de.m.mimecastprotect.com/s/XXgTC28ymRTVEwj5nCxcZi5sIti?domain=compass.microsoft.com"><br>   <br>   <div>       Olá ${customer}.<br><br>       Agradecemos o contato conosco, enquanto estávamos conversando a ligação foi interrompida, tentamos retornar o contato mas não tivemos sucesso.       <br>       <br>       Tentarei retornar o contato com você amanhã, mas para aumentar as nossas chances de sucesso no contato, por favor, nos forneça um novo número de telefone e indique seu horário ou período de preferência para que possamos entrar em contato.       <br>       <br>       Caso você tenha um bloqueador de chamadas de call-center configurado em seu telefone, peço que o desative temporariamente no dia/horário que escolher para receber nossa ligação.       <br>       <br>       Se o incidente já foi solucionado, por favor, nos notifique respondendo este e-mail para que possamos finalizar o caso <strong>${ticket}.</strong><br>             <br>       Na Microsoft trabalhamos para a sua satisfação e consideramos muito importante suas sugestões, reclamações ou       quaisquer outras informações.<br><br>       Desde já agradecemos a compreensão e colaboração.<br>       Obrigado por usar o Suporte Microsoft.<br><br>   </div>   <div>       <i>Já conhece o Microsoft Copilot, a nova Inteligência Artificial da Microsoft? <a               href="https://url.de.m.mimecastprotect.com/s/E49SC36znluXRQBDLu5fliQhliI?domain=microsoft.com" target="_blank"> Clique Aqui e Saiba               Mais</a></i><br>       <i>Acesse a página do Windows e conheça as ofertas para aquisição do produto. <a               href="https://url.de.m.mimecastprotect.com/s/bALjC46Ao8uz71o4LhqhVi4CTrr?domain=microsoft.com" target="_blank"> Clique Aqui </a></i><br>       <i>Acesse e conheça as novidades e promoções disponíveis para o Pacote Office. <a               href="https://url.de.m.mimecastprotect.com/s/gp_BC57Bp8hMWGvkqTPiZikYVst?domain=aka.ms" target="_blank"> Clique Aqui </a></i><br><br>   </div>   <div>       <strong>Suporte ao Cliente Microsoft</strong><br><br>       <u>Nosso horário de atendimento<br></u>       Segunda à Sexta (Incluindo feriados) Das 09:00 às 21:00.<br>       Sábados e Domingos (Incluindo feriados) Das 10:00 às 18:00.<br>       <a href=https://url.de.m.mimecastprotect.com/s/JInNC6WDq6HPGKDLQTwsYi5IHMM?domain=aka.ms target=_blank>Entre em Contato com o Suporte da           Microsoft</a>   </div>   <div>       <p>           O número do seu pedido de assistência é o <strong>${ticket}</strong>, caso necessite.       </p>   </div>   <div>       <p>           Encontre soluções de forma simples na nova comunidade online da Microsoft. Conheça a Comunidade Microsoft em           <a href="https://url.de.m.mimecastprotect.com/s/WrGRC79Er6uzWkqG3hGtZiosrJN?domain=answers.microsoft.com/" target="_blank">https://url.de.m.mimecastprotect.com/s/WrGRC79Er6uzWkqG3hGtZiosrJN?domain=answers.microsoft.com/</a>       </p>   </div>   <br>       <div style="background-color:#FFFFFF;font-size: 12px;">           <strong>Observação:</strong> Será necessário entrar com uma conta Microsoft. Se não tiver uma conta           Microsoft ou não consegue acessá-la, poderá criar uma conta temporária pelo link <a               href=https://url.de.m.mimecastprotect.com/s/Hk3cC83GvqsXwRrNnuYuKiynxCL?domain=microsoft.com               target=_blank> Microsoft Outlook | Criar conta de email | Fazer Email grátis</a>. Caso não entre com           sua conta Microsoft, você poderá ser direcionado para atendimento de suporte por chat.           <br>           Os sites de terceiros mencionados nos e-mails que são enviados pela Microsoft, são produzidos por           empresas independentes. A Microsoft não oferece garantia, implícita ou não, com relação ao desempenho ou           à confiabilidade desses produtos.           A Microsoft fornece informações para o contato com terceiros para ajudá-lo a encontrar suporte técnico.           Esses contatos podem ser alterados sem aviso prévio. A Microsoft não garante a precisão dessas           informações para contato com terceiros.<br><br>           <strong>Confidencialidade:</strong> A informação contida nesta mensagem de e-mail, incluindo quaisquer           anexos, é confidencial e está reservada apenas à pessoa ou entidade para a qual foi endereçada. Se você           não é o destinatário ou a pessoa responsável por encaminhar esta mensagem ao destinatário, você está,           por meio desta, notificado que não deverá rever, retransmitir, imprimir, copiar, usar ou distribuir esta           mensagem de e-mail ou quaisquer anexos. Caso você tenha recebido esta mensagem por engano, por favor,           contate o remetente imediatamente e apague esta mensagem de seu computador ou de qualquer outro banco de           dados. Encontre soluções de forma simples na nova comunidade online da Microsoft. Conheça a Comunidade           Microsoft em <a href=https://url.de.m.mimecastprotect.com/s/RkIRC160lju6EYRJvI4U4iVmpeQ?domain=answers.microsoft.com target=_blank>https://url.de.m.mimecastprotect.com/s/RkIRC160lju6EYRJvI4U4iVmpeQ?domain=answers.microsoft.com</a>. Muito           obrigado.<br><br>           Microsoft Corporation<br>           One Microsoft Way<br>           Redmond, WA 98052<br>       </div><br>       <strong>Fale conosco: </strong>       <a href="https://url.de.m.mimecastprotect.com/s/PGIDCgpRj5TqY2kEVsGH8i47zjT?domain=support.microsoft.com/" target="_blank">https://url.de.m.mimecastprotect.com/s/PGIDCgpRj5TqY2kEVsGH8i47zjT?domain=support.microsoft.com/</a>       <br> </body> </html>`;
+            openInNewWindow(emailContent, "Strike 1 - Ligação interrompida")
+        }
+
+        function gerarStrike2() {
+            var customer = document.getElementById("customer").value;
+            var ticket = document.getElementById("ticket").value;
+            if (!customer || ticket.length < 10) {
+                alert("Por favor, preencha o nome do cliente e o número de protocolo.")
+                return;
+            }
+            var emailContent = `<html> <head>     <meta http-equiv="Content-Type" content="text/html; charset=UTF-16LE">     <title>Strike 2</title>     <style>         * {             font-family: Segoe UI;             border-collapse: collapse;         }         div {             font-family: Segoe UI;             font-size: 15.5px;             color: grey;         }     </style> </head> <body>     <img         src="https://url.de.m.mimecastprotect.com/s/XXgTC28ymRTVEwj5nCxcZi5sIti?domain=compass.microsoft.com"><br>     <br>     <div>         Olá ${customer}.<br><br>         Não estamos conseguindo contato com você. Para facilitar nossa comunicação, por favor, nos forneça um novo número de telefone e indique seu horário ou período de preferência para que possamos entrar em contato.         <br>         <br>         Caso você tenha um bloqueador de chamadas de call-center configurado em seu telefone, peço que o desative temporariamente no dia/horário que escolher para receber nossa ligação.         <br>         <br>         Se o incidente já foi solucionado, por favor, nos notifique respondendo este e-mail para que possamos finalizar o caso <strong>${ticket}.</strong><br>                 <br>         Na Microsoft trabalhamos para a sua satisfação e consideramos muito importante suas sugestões, reclamações ou         quaisquer outras informações.<br><br>         Desde já agradecemos a compreensão e colaboração.<br>         Obrigado por usar o Suporte Microsoft.<br><br>     </div>     <div>         <i>Já conhece o Microsoft Copilot, a nova Inteligência Artificial da Microsoft? <a                 href="https://url.de.m.mimecastprotect.com/s/E49SC36znluXRQBDLu5fliQhliI?domain=microsoft.com" target="_blank"> Clique Aqui e Saiba                 Mais</a></i><br>         <i>Acesse a página do Windows e conheça as ofertas para aquisição do produto. <a                 href="https://url.de.m.mimecastprotect.com/s/bALjC46Ao8uz71o4LhqhVi4CTrr?domain=microsoft.com" target="_blank"> Clique Aqui </a></i><br>         <i>Acesse e conheça as novidades e promoções disponíveis para o Pacote Office. <a                 href="https://url.de.m.mimecastprotect.com/s/gp_BC57Bp8hMWGvkqTPiZikYVst?domain=aka.ms" target="_blank"> Clique Aqui </a></i><br><br>     </div>     <div>         <strong>Suporte ao Cliente Microsoft</strong><br><br>         <u>Nosso horário de atendimento<br></u>         Segunda à Sexta (Incluindo feriados) Das 09:00 às 21:00.<br>         Sábados e Domingos (Incluindo feriados) Das 10:00 às 18:00.<br>         <a href=https://url.de.m.mimecastprotect.com/s/JInNC6WDq6HPGKDLQTwsYi5IHMM?domain=aka.ms target=_blank>Entre em Contato com o Suporte da             Microsoft</a>     </div>     <div>         <p>             O número do seu pedido de assistência é o <strong>${ticket}</strong>, caso necessite.         </p>     </div>     <div>         <p>             Encontre soluções de forma simples na nova comunidade online da Microsoft. Conheça a Comunidade Microsoft em             <a href="https://url.de.m.mimecastprotect.com/s/WrGRC79Er6uzWkqG3hGtZiosrJN?domain=answers.microsoft.com/" target="_blank">https://url.de.m.mimecastprotect.com/s/WrGRC79Er6uzWkqG3hGtZiosrJN?domain=answers.microsoft.com/</a>         </p>     </div>     <br>         <div style="background-color:#FFFFFF;font-size: 12px;">             <strong>Observação:</strong> Será necessário entrar com uma conta Microsoft. Se não tiver uma conta             Microsoft ou não consegue acessá-la, poderá criar uma conta temporária pelo link <a                 href=https://url.de.m.mimecastprotect.com/s/Hk3cC83GvqsXwRrNnuYuKiynxCL?domain=microsoft.com                 target=_blank> Microsoft Outlook | Criar conta de email | Fazer Email grátis</a>. Caso não entre com             sua conta Microsoft, você poderá ser direcionado para atendimento de suporte por chat.             <br>             Os sites de terceiros mencionados nos e-mails que são enviados pela Microsoft, são produzidos por             empresas independentes. A Microsoft não oferece garantia, implícita ou não, com relação ao desempenho ou             à confiabilidade desses produtos.             A Microsoft fornece informações para o contato com terceiros para ajudá-lo a encontrar suporte técnico.             Esses contatos podem ser alterados sem aviso prévio. A Microsoft não garante a precisão dessas             informações para contato com terceiros.<br><br>             <strong>Confidencialidade:</strong> A informação contida nesta mensagem de e-mail, incluindo quaisquer             anexos, é confidencial e está reservada apenas à pessoa ou entidade para a qual foi endereçada. Se você             não é o destinatário ou a pessoa responsável por encaminhar esta mensagem ao destinatário, você está,             por meio desta, notificado que não deverá rever, retransmitir, imprimir, copiar, usar ou distribuir esta             mensagem de e-mail ou quaisquer anexos. Caso você tenha recebido esta mensagem por engano, por favor,             contate o remetente imediatamente e apague esta mensagem de seu computador ou de qualquer outro banco de             dados. Encontre soluções de forma simples na nova comunidade online da Microsoft. Conheça a Comunidade             Microsoft em <a href=https://url.de.m.mimecastprotect.com/s/RkIRC160lju6EYRJvI4U4iVmpeQ?domain=answers.microsoft.com target=_blank>https://url.de.m.mimecastprotect.com/s/RkIRC160lju6EYRJvI4U4iVmpeQ?domain=answers.microsoft.com</a>. Muito             obrigado.<br><br>             Microsoft Corporation<br>             One Microsoft Way<br>             Redmond, WA 98052<br>         </div><br>         <strong>Fale conosco: </strong>         <a href="https://url.de.m.mimecastprotect.com/s/PGIDCgpRj5TqY2kEVsGH8i47zjT?domain=support.microsoft.com/" target="_blank">https://url.de.m.mimecastprotect.com/s/PGIDCgpRj5TqY2kEVsGH8i47zjT?domain=support.microsoft.com/</a>         <br> </body> </html>`;
+            openInNewWindow(emailContent, "Strike 2")
+        }
+
+        function gerarStrike3() {
+            var customer = document.getElementById("customer").value;
+            var ticket = document.getElementById("ticket").value;
+            if (!customer || ticket.length < 10) {
+                alert("Por favor, preencha o nome do cliente e o número de protocolo.")
+                return;
+            }
+            var emailContent = `<html> <head>   <meta http-equiv="Content-Type" content="text/html; charset=UTF-16LE">   <title>Encerramento - Strike 3</title>   <style>     * {       font-family: Segoe UI;       border-collapse: collapse;     }     div {       font-family: Segoe UI;       font-size: 15.5px;       color: grey;     }   </style> </head> <body>   <img     src="https://url.de.m.mimecastprotect.com/s/XXgTC28ymRTVEwj5nCxcZi5sIti?domain=compass.microsoft.com"><br>   <br>   <div>     <div>       Olá ${customer}.<br><br>       Tentamos fazer contato para verificar se o comportamento informado ainda persiste, nesse momento o seu caso será       fechado como resolvido.       <br>       <br>       Se o seu incidente não foi resolvido, por favor, peço que agende novamente o suporte em nosso site <a         href="https://url.de.m.mimecastprotect.com/s/JInNC6WDq6HPGKDLQTwsYi5IHMM?domain=aka.ms" taget=_blank>https://url.de.m.mimecastprotect.com/s/JInNC6WDq6HPGKDLQTwsYi5IHMM?domain=aka.ms</a> para continuarmos trabalhando.       <br>       <br>       Caso você não esteja com disponibilidade neste momento, você poderá entrar em contato conosco e abrir um novo caso conforme necessário.       <br>       <br>       Se o incidente já foi solucionado, por favor, nos notifique respondendo este e-mail para que possamos finalizar o       caso <strong>${ticket}.</strong><br>       Se precisar de ajuda ou tiver alguma dúvida, entre em contato conosco por um de nossos canais de atendimento e       informe o Protocolo acima.<br><br>       Na Microsoft trabalhamos para a sua satisfação e consideramos muito importante suas sugestões, reclamações ou       quaisquer outras informações.<br><br>       Desde já agradecemos a compreensão e colaboração.<br>       Obrigado por usar o Suporte Microsoft.<br><br>     </div>     <div>       <i>Já conhece o Microsoft Copilot, a nova Inteligência Artificial da Microsoft? <a           href="https://url.de.m.mimecastprotect.com/s/E49SC36znluXRQBDLu5fliQhliI?domain=microsoft.com" target="_blank"> Clique Aqui e Saiba           Mais</a></i><br>       <i>Acesse a página do Windows e conheça as ofertas para aquisição do produto. <a           href="https://url.de.m.mimecastprotect.com/s/bALjC46Ao8uz71o4LhqhVi4CTrr?domain=microsoft.com" target="_blank"> Clique Aqui </a></i><br>       <i>Acesse e conheça as novidades e promoções disponíveis para o Pacote Office. <a           href="https://url.de.m.mimecastprotect.com/s/gp_BC57Bp8hMWGvkqTPiZikYVst?domain=aka.ms" target="_blank"> Clique Aqui </a></i><br><br>     </div>     <div>       <strong>Suporte ao Cliente Microsoft</strong><br><br>       <u>Nosso horário de atendimento<br></u>       Segunda à Sexta (Incluindo feriados) Das 09:00 às 21:00.<br>       Sábados e Domingos (Incluindo feriados) Das 10:00 às 18:00.<br>       <a href=https://url.de.m.mimecastprotect.com/s/JInNC6WDq6HPGKDLQTwsYi5IHMM?domain=aka.ms target=_blank>Entre em Contato com o Suporte da         Microsoft</a>     </div>     <div>       <p>         O número do seu pedido de assistência é o <strong>${ticket}</strong>, caso necessite.       </p>     </div>     <div>       <p>         Encontre soluções de forma simples na nova comunidade online da Microsoft. Conheça a Comunidade Microsoft em         <a href="https://url.de.m.mimecastprotect.com/s/WrGRC79Er6uzWkqG3hGtZiosrJN?domain=answers.microsoft.com/" target="_blank">https://url.de.m.mimecastprotect.com/s/WrGRC79Er6uzWkqG3hGtZiosrJN?domain=answers.microsoft.com/</a>       </p>     </div>     <br>     <div style="background-color:#FFFFFF;font-size: 12px;">       <strong>Observação:</strong> Será necessário entrar com uma conta Microsoft. Se não tiver uma conta       Microsoft ou não consegue acessá-la, poderá criar uma conta temporária pelo link <a         href=https://url.de.m.mimecastprotect.com/s/Hk3cC83GvqsXwRrNnuYuKiynxCL?domain=microsoft.com         target=_blank> Microsoft Outlook | Criar conta de email | Fazer Email grátis</a>. Caso não entre com       sua conta Microsoft, você poderá ser direcionado para atendimento de suporte por chat.       <br>       Os sites de terceiros mencionados nos e-mails que são enviados pela Microsoft, são produzidos por       empresas independentes. A Microsoft não oferece garantia, implícita ou não, com relação ao desempenho ou       à confiabilidade desses produtos.       A Microsoft fornece informações para o contato com terceiros para ajudá-lo a encontrar suporte técnico.       Esses contatos podem ser alterados sem aviso prévio. A Microsoft não garante a precisão dessas       informações para contato com terceiros.<br><br>       <strong>Confidencialidade:</strong> A informação contida nesta mensagem de e-mail, incluindo quaisquer       anexos, é confidencial e está reservada apenas à pessoa ou entidade para a qual foi endereçada. Se você       não é o destinatário ou a pessoa responsável por encaminhar esta mensagem ao destinatário, você está,       por meio desta, notificado que não deverá rever, retransmitir, imprimir, copiar, usar ou distribuir esta       mensagem de e-mail ou quaisquer anexos. Caso você tenha recebido esta mensagem por engano, por favor,       contate o remetente imediatamente e apague esta mensagem de seu computador ou de qualquer outro banco de       dados. Encontre soluções de forma simples na nova comunidade online da Microsoft. Conheça a Comunidade       Microsoft em <a href=https://url.de.m.mimecastprotect.com/s/RkIRC160lju6EYRJvI4U4iVmpeQ?domain=answers.microsoft.com target=_blank>https://url.de.m.mimecastprotect.com/s/RkIRC160lju6EYRJvI4U4iVmpeQ?domain=answers.microsoft.com</a>. Muito       obrigado.<br><br>       Microsoft Corporation<br>       One Microsoft Way<br>       Redmond, WA 98052<br>     </div><br>     <strong>Fale conosco: </strong>     <a href="https://url.de.m.mimecastprotect.com/s/PGIDCgpRj5TqY2kEVsGH8i47zjT?domain=support.microsoft.com/" target="_blank">https://url.de.m.mimecastprotect.com/s/PGIDCgpRj5TqY2kEVsGH8i47zjT?domain=support.microsoft.com/</a>     <br> </body> </html>`;
+            openInNewWindow(emailContent, "Encerramento - Strike 3")
+        }
+
+        function gerarSolucionado() {
+            var customer = document.getElementById("customer").value;
+            var ticket = document.getElementById("ticket").value;
+            if (!customer || ticket.length < 10) {
+                alert("Por favor, preencha o nome do cliente e o número de protocolo.")
+                return;
+            }
+            var emailContent = `<html> <head>     <meta http-equiv="Content-Type" content="text/html; charset=UTF-16LE">     <title>Caso Solucionado</title>     <style>         * {             font-family: Segoe UI;             border-collapse: collapse;         }         div {             font-family: Segoe UI;             font-size: 15.5px;             color: grey;         }     </style> </head> <body>     <img         src="https://url.de.m.mimecastprotect.com/s/XXgTC28ymRTVEwj5nCxcZi5sIti?domain=compass.microsoft.com"><br>     <br>     <div>         Olá ${customer}.<br><br>         Conforme conversamos, uma vez que alcançamos o objetivo deste atendimento <strong>${ticket}</strong> ele foi encerrado como solucionado.         <br>         <br>         Foi um prazer trabalhar com você neste caso e esperamos que os serviços prestados tenham atendido as suas expectativas. Ficamos muito felizes de ter recebido seu contato e saiba que todos os comentários e sugestões são bem-vindos.         <br>         <br>         Se o problema não foi resolvido ou tenha voltado a acontecer, nos informe ou fique a vontade para entrar em contato com o nosso atendimento e mencione este número de caso, pois todas as instruções e procedimentos foram documentados.         <br>         <br>         Desde já agradecemos a compreensão e colaboração.<br>         Obrigado por usar o Suporte Microsoft.<br><br>     </div>     <div>         <i>Já conhece o Microsoft Copilot, a nova Inteligência Artificial da Microsoft? <a                 href="https://url.de.m.mimecastprotect.com/s/E49SC36znluXRQBDLu5fliQhliI?domain=microsoft.com" target="_blank"> Clique Aqui e Saiba                 Mais</a></i><br>         <i>Acesse a página do Windows e conheça as ofertas para aquisição do produto. <a                 href="https://url.de.m.mimecastprotect.com/s/bALjC46Ao8uz71o4LhqhVi4CTrr?domain=microsoft.com" target="_blank"> Clique Aqui </a></i><br>         <i>Acesse e conheça as novidades e promoções disponíveis para o Pacote Office. <a                 href="https://url.de.m.mimecastprotect.com/s/gp_BC57Bp8hMWGvkqTPiZikYVst?domain=aka.ms" target="_blank"> Clique Aqui </a></i><br><br>     </div>     <div>         <strong>Suporte ao Cliente Microsoft</strong><br><br>         <u>Nosso horário de atendimento<br></u>         Segunda à Sexta (Incluindo feriados) Das 09:00 às 21:00.<br>         Sábados e Domingos (Incluindo feriados) Das 10:00 às 18:00.<br>         <a href=https://url.de.m.mimecastprotect.com/s/JInNC6WDq6HPGKDLQTwsYi5IHMM?domain=aka.ms target=_blank>Entre em Contato com o Suporte da             Microsoft</a>     </div>     <div>         <p>             O número do seu pedido de assistência é o <strong>${ticket}</strong>, caso necessite.         </p>     </div>     <div>         <p>             Encontre soluções de forma simples na nova comunidade online da Microsoft. Conheça a Comunidade Microsoft em             <a href="https://url.de.m.mimecastprotect.com/s/WrGRC79Er6uzWkqG3hGtZiosrJN?domain=answers.microsoft.com/" target="_blank">https://url.de.m.mimecastprotect.com/s/WrGRC79Er6uzWkqG3hGtZiosrJN?domain=answers.microsoft.com/</a>         </p>     </div>     <br>         <div style="background-color:#FFFFFF;font-size: 12px;">             <strong>Observação:</strong> Será necessário entrar com uma conta Microsoft. Se não tiver uma conta             Microsoft ou não consegue acessá-la, poderá criar uma conta temporária pelo link <a                 href=https://url.de.m.mimecastprotect.com/s/Hk3cC83GvqsXwRrNnuYuKiynxCL?domain=microsoft.com                 target=_blank> Microsoft Outlook | Criar conta de email | Fazer Email grátis</a>. Caso não entre com             sua conta Microsoft, você poderá ser direcionado para atendimento de suporte por chat.             <br>             Os sites de terceiros mencionados nos e-mails que são enviados pela Microsoft, são produzidos por             empresas independentes. A Microsoft não oferece garantia, implícita ou não, com relação ao desempenho ou             à confiabilidade desses produtos.             A Microsoft fornece informações para o contato com terceiros para ajudá-lo a encontrar suporte técnico.             Esses contatos podem ser alterados sem aviso prévio. A Microsoft não garante a precisão dessas             informações para contato com terceiros.<br><br>             <strong>Confidencialidade:</strong> A informação contida nesta mensagem de e-mail, incluindo quaisquer             anexos, é confidencial e está reservada apenas à pessoa ou entidade para a qual foi endereçada. Se você             não é o destinatário ou a pessoa responsável por encaminhar esta mensagem ao destinatário, você está,             por meio desta, notificado que não deverá rever, retransmitir, imprimir, copiar, usar ou distribuir esta             mensagem de e-mail ou quaisquer anexos. Caso você tenha recebido esta mensagem por engano, por favor,             contate o remetente imediatamente e apague esta mensagem de seu computador ou de qualquer outro banco de             dados. Encontre soluções de forma simples na nova comunidade online da Microsoft. Conheça a Comunidade             Microsoft em <a href=https://url.de.m.mimecastprotect.com/s/RkIRC160lju6EYRJvI4U4iVmpeQ?domain=answers.microsoft.com target=_blank>https://url.de.m.mimecastprotect.com/s/RkIRC160lju6EYRJvI4U4iVmpeQ?domain=answers.microsoft.com</a>. Muito             obrigado.<br><br>             Microsoft Corporation<br>             One Microsoft Way<br>             Redmond, WA 98052<br>         </div><br>         <strong>Fale conosco: </strong>         <a href="https://url.de.m.mimecastprotect.com/s/PGIDCgpRj5TqY2kEVsGH8i47zjT?domain=support.microsoft.com/" target="_blank">https://url.de.m.mimecastprotect.com/s/PGIDCgpRj5TqY2kEVsGH8i47zjT?domain=support.microsoft.com/</a>         <br> </body>`;
+            openInNewWindow(emailContent, "Caso solucionado")
+        }
+
+        function gerarATO() {
+            var customer = document.getElementById("customer").value;
+            var ticket = document.getElementById("ticket").value;
+            var linkDTM = document.getElementById("linkd").value;
+            if (!customer || ticket.length < 10 || !linkDTM) {
+                alert("Por favor, preencha o nome do cliente, número de protocolo e o link para DTM.")
+                return;
+            }
+            var emailContent = `<html> <style> table { font-family: Segoe UI; border-collapse: collapse; } th { background-color: #7311B0; color: #FFFFFF; } table, td, th { border: 1px solid black;text-align: center;padding: 8px;spacing: 0px; } div { font-family: Segoe UI; font-size: 15.5px; color: grey; } #myDIV {   background-color:#FFFFFF;   font-size: 12px; } </style> <div> <img src="https://url.de.m.mimecastprotect.com/s/XXgTC28ymRTVEwj5nCxcZi5sIti?domain=compass.microsoft.com" /><br><br> <br> Olá ${customer}.<br><br> Obrigado por entrar em contato com o Atendimento ao cliente da Microsoft. <br><br> Conforme conversado, nos envie os seguintes dados por meio de um documento que pode ser <b>PDF</b>, <b>TXT</b>, <b>Docx</b> ou <b>RTF</b> através do link seguro:<br><br> <mark><strong>POR FAVOR, NÃO RESPONDA ESTE E-MAIL COM NENHUM DOS DADOS ABAIXO, COPIE A LISTA E RESPONDA ATRAVÉS DESTE LINK SEGURO:<br> <a href="${linkDTM}" target="_blank">Clique aqui para ser Direcionado ao Link Seguro</a></strong></mark> <h2>Dicas para Recuperação da Conta</h2> O segredo para passar no processo de validação é fornecer o máximo de informação possível.<br> <ul> 	<li>Para perguntas com várias respostas, como nomes de pastas, assuntos e contatos do Hotmail forneça 3 ou 4 respostas em vez de 1.</li> 	<li>Se o código postal/CEP puder ser um dos 2 ou 3, forneça todos eles.</li> </ul>  <strong>Quanto mais informações fornecer e quanto mais preciso estiver, mais provável será passar validação.</strong> <h3>Informações enviadas em seu questionário on-line</h3> <ul> 	<li>Informe o endereço de e-mail da Conta Microsoft que está tentando acessar/recuperar:</li> 	<li>Número da solicitação de recuperação da conta recebido como resposta por preencher o Formulário de Recuperação de Contas (<a href="https://url.de.m.mimecastprotect.com/s/O0ZpCjYXm2FYyq9opswI9imfMCT?domain=aka.ms" target="_blank">https://url.de.m.mimecastprotect.com/s/BSLTCk2Yn5FkqQN2mcgSxiGYB3q?domain=aka.ms</a>):</li>  	<li>Endereço de e-mail alternativo fornecido em seu formulário de recuperação de conta on-line:</li>  	<li>Um bom número de telefone com o qual podemos entrar em contato:</li> </ul> 	<h3>As suas informações de perfil na conta.</h3>  <ul> 	<li>Nome:</li>       <li>Data de Nascimento:</li>    <li>País (exemplo: Brasil):</li>    <li>Região / Estado:</li>    <li>Código postal / CEP:</li> </ul> <h3>Os endereços de e-mail dos contatos que você se comunicou recentemente na sua lista de endereços ou lista de mensagens:</h3>  Sugestão - verifique com os amigos ou membros da família os seus endereços de e-mail   <br>     <ol> 	<li></li> 	<li></li> 	<li></li> 	<li></li>  </ol>	  <h3>Assuntos recentes de e-mail que você enviou da conta:</h3>  Sugestão: verifique com amigos ou membros da família que receberam recentemente um e-mail dessa conta   <br>     <ol> 	<li></li> 	<li></li> 	<li></li> 	<li></li>  </ol>	 <h3>Endereço de IP</h3> Liste o seu endereço IP de um local onde acessou a conta com sucesso no passado. Para determinar o seu endereço IP, abra o seu navegador e pesquise 'Qual é o meu IP'. O conjunto de números que aparece no topo desta página da Web é o seu endereço IP atual. Se você acessou a conta de vários locais ou dispositivos / telefones, convém fornecer mais de um endereço IP para ter uma chance melhor de validar a conta. Um endereço IP começando em 192.168 ou 10.0 é o seu endereço IP de rede interno e não é válido para entrada.  <ol> 	<li></li> 	<li></li> 	<li></li> 	<li></li>  </ol>	  Para encontrar o endereço de IP, acesse o link <a href="https://url.de.m.mimecastprotect.com/s/heQdClRZoOh1zZ7Rgc5T3izT4yI?domain=bing.com" target="_blank">Descobrir meu IP</a>, ou outro site para busca de endereço IP. Ao acessar o link o IP estará listado como Socket IP. <h3>Perguntas sobre o histórico da conta </h3>  <ol> 	 <li>A data em que a conta foi criada:</li>   	 <li>A data em que efetuou login com sucesso pela última vez na conta:</li>    	 <li>A data em que você alterou a senha pela última vez:</li>   	 <li>Endereços de e-mail ou números de telefone alternativos associados à conta: <br>    	 <li>Local onde a conta foi criada:</li> 	 <li>Existem informações de segurança na conta Microsoft não reconhecidas (telefone ou e-mail alternativo não reconhecidos)?</li> 	 <li>A conta principal é uma conta de Adulto ou criança?</li> 	 <li>Qual o endereço da nova conta Microsoft criada pelo link <a href="https://url.de.m.mimecastprotect.com/s/K5z6Cmq1pwtpRn2yET7UAiRckJl?domain=signup.live.com" target="_blank">signup.live.com</a>?</li> 	 <li>Houveram mudanças nas informações de segurança da conta Microsoft recentemente sem seu consentimento? (Sim/Não - Em caso afirmativo, quais alterações?)</li>  </ol>	 <h3> Informações de faturamento usadas para:</h3>   <ul> 	<li>Compras/assinaturas recentes:</li>  	<li>Nome de cobrança (como consta na fatura):</li>   	<li>Últimos 4 dígitos do cartão de crédito:</li>   	<li>Data de validade:</li>    </ul> <strong>IMPORTANTE:</strong> Se houver mais de uma compra recente separar por vírgula. <br>  <br>   <h2>Informações de Dispositivo Xbox</h2> A seção a seguir pode não se aplicar à sua situação específica. É opcional, mas nos ajuda a validar rapidamente a propriedade da conta. <h3>Qualquer Xbox GamerTag associado a esta conta:</h3>  Sugestão – se tiver um Xbox GamerTag associado a essa conta, forneça o máximo de informações possível sobre o console e a GamerTag  <br>     <ol> 	<li></li> 	<li></li> 	<li></li> 	<li></li>  </ol> <h3>Número de Série do Console</h3> Para localizar o o Número de Série do Console: <ul> 	<li>Você pode verificar a etiqueta de serviço do próprio console</li> 	<li>Ou ainda, em configurações. Selecione Perfil e sistema > Configurações > Sistema > Informações do console.	 	<ul> 		<li>O número de série aparece primeiro na lista exibida.</li></ul></li> </ul> <u>Digite aqui o Número de Série: <br></u> <h3>ID do dispositivo Xbox</h3> <strong>Para Console Xbox 360 </strong><br> Para encontrar o ID do console, navegue até o Painel Xbox:  <br>    <ol> 	<li>Vá para o hub Configurações e selecione Sistema</li>  	<li>Selecione Configurações do console</li>  	<li>Selecione Informações do sistema</li>    	<li>O ID do console é exibido em sua tela, abaixo do número de série do console.</li>  </ol>  <strong>Para Console Xbox One / Xbox Series </strong><br>  Para encontrar o ID do dispositivo (Console ID), navegue até o painel Xbox:  <br>    <ol> 	<li>Vá para o hub Configurações e selecione Sistema</li> 	<li>Selecione Informações do console.</li> 	<li>O ID do dispositivo Xbox (Console ID) é exibido em sua tela.</li>  </ol> <u>Digite aqui o Número de ID do Dispositivo: <br><br></u> <strong> OBS: Não se trata da ID do dispositivo do Xbox Live iniciado com F. </strong><br><br> Responda a este e-mail depois de anexar as informações solicitadas à nossa <strong>Ferramenta de Gerenciamento e Transferência de Dados / Link Seguro</strong> para podermos prosseguir com a investigação de seu caso.<br><br> Aguardamos sua resposta. <br><br> <strong>Atendimento ao Cliente do Suporte Microsoft</strong><br><br> <div id="assinatura"> Nosso horário de atendimento<br> Segunda à Sexta das 09h às 21h.<br> Sábados e Domingo das 10h às 18h<br> <a href=https://url.de.m.mimecastprotect.com/s/PGIDCgpRj5TqY2kEVsGH8i47zjT?domain=support.microsoft.com/ target=_blank>Clique aqui e fale conosco</a><br><br> </div> <div id="myDIV">   Encontre soluções de forma simples na nova comunidade online da Microsoft. Conheça a Comunidade Microsoft em <a href= https://url.de.m.mimecastprotect.com/s/WrGRC79Er6uzWkqG3hGtZiosrJN?domain=answers.microsoft.com/ target="_blank"> https://url.de.m.mimecastprotect.com/s/WrGRC79Er6uzWkqG3hGtZiosrJN?domain=answers.microsoft.com/</a><br><br> Estamos lutando para proteger a saúde e o bem estar das comunidades ao qual operamos e continuamos fornecendo recursos e tecnologias aos nossos clientes para ajuda-los a fazer o melhor enquanto trabalham remotamente. - CEO Satya Nadella<br><br> Obs. Os sites de terceiros mencionados nos e-mails que são enviados pela Microsoft, são produzidos por empresas independentes. A Microsoft não oferece garantia, implícita ou não, com relação ao desempenho ou à confiabilidade desses produtos.<br> A Microsoft fornece informações para o contato com terceiros para ajudá-lo a encontrar suporte técnico. Esses contatos podem ser alterados sem aviso prévio. A Microsoft não garante a precisão dessas informações para contato com terceiros.<br> Confidencialidade: A informação contida nesta mensagem de e-mail, incluindo quaisquer anexos, é confidencial e está reservada apenas à pessoa ou entidade para a qual foi endereçada. Se você não é o destinatário ou a pessoa responsável por encaminhar esta mensagem ao destinatário, você está, por meio desta, notificado que não deverá rever, retransmitir, imprimir, copiar, usar ou distribuir esta mensagem de e-mail ou quaisquer anexos. Caso você tenha recebido esta mensagem por engano, por favor, contate o remetente imediatamente e apague esta mensagem de seu computador ou de qualquer outro banco de dados. Muito obrigado.<br><br> Microsoft Corporation<br> One Microsoft Way<br> Redmond, WA 98052<br>   </div> </body> </html> `;
+            openInNewWindow(emailContent, "Takeover")
+        }
+
+        function openInNewWindow(content, tipo) {
+            var newWindow = window.open("", "_blank", "width=1360,height=960")
+            if (newWindow) {
+                var newContent = content
+                newWindow.document.write(newContent);
+                newWindow.document.close();
+            } else {
+                alert("Pop-up está bloqueado! Por favor permita o pop-ups para esse site.")
+            }
+        }
+
+        function atualizarSaida() {
+            var customer = document.getElementById("customer").value;
+            var ticket = document.getElementById("ticket").value;
+            document.getElementById("output").innerHTML = `Cliente: <span class="highlight">${customer}</span> | Protocolo: <span class="highlight">${ticket}</span>`;
+        }
+
+        function validarProtocolo() {
+            var ticketInput = document.getElementById("ticket");
+            var value = ticketInput.value;
+            value = value.replace(/\D/g, '');
+            value = value.trim();
+            if (value.length > 10) {
+                value = value.substring(0, 10);
+            }
+
+            ticketInput.value = value;
+            if (value.length !== 10) {
+                ticketInput.classList.add('alertacampo');
+            } else {
+                ticketInput.classList.remove('alertacampo');
+            }
+        }
+
+
+        function validarNome() {
+            var customerInput = document.getElementById("customer");
+            var value = customerInput.value;
+
+            customerInput.value = value.replace(/[0-9]/g, '');
+        }
+
+        function resetar() {
+            document.getElementById("customer").value = "";
+            document.getElementById("ticket").value = "";
+            document.getElementById("linkd").value = "";
+            document.getElementById("produto").value = "";
+            document.getElementById("output").innerHTML = "";
+            var ticketInput = document.getElementById("ticket");
+            ticketInput.classList.remove('alertacampo');
+        }
+
+        function formatarData(data) {
+            const options = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            let dataFormatada = data.toLocaleString('pt-BR', options)
+            dataFormatada = dataFormatada.replace('às', 'por volta de')
+            return dataFormatada;
+        }
+
+        function definirDataAtual() {
+            const dataAtual = `${ano}-${mes}-${dia}T${hora}:${minuto}`;
+            document.getElementById('dataHora').value = dataAtual;
+            novaData = formatarData(hoje);
+        }
+
+        document.getElementById('dataHora').addEventListener('input', function () {
+            const dataHo = document.getElementById('dataHora').value;
+            if (dataHo) {
+                const data = new Date(dataHo);
+                novaData = formatarData(data)
+            }
+        }
+        );
+    </script>
+</body>
+
+</html>

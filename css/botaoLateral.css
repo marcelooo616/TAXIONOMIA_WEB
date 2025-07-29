@@ -1,0 +1,63 @@
+
+     .componente-lateral {
+      
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      background-color: var(--tp-blue);
+      color: white;
+      border-radius: 50%;
+	  margin-left: 10px;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 1000;
+      overflow: hidden;
+    }
+
+    .componente-lateral:hover {
+      width: 180px;
+      border-radius: 30px;
+      justify-content: flex-start;
+      padding-left: 20px;
+    }
+	
+	.icone{
+		font-size: 30px;
+	}
+
+    .icone,
+    .texto {
+      transition: opacity 0.3s ease;
+    }
+	
+	
+
+    .texto {
+	  font-size: 18px;
+      display: none;
+      white-space: nowrap;
+    }
+
+    .componente-lateral:hover .icone {
+      display: none;
+    }
+
+    .componente-lateral:hover .texto {
+      display: inline;
+    }
+/* css/botaoLateral.css */
+
+#botoesLateraisContainer {
+    position: fixed; /* Fixa o contêiner na tela, não rola com o conteúdo */
+    top: 50%;        /* Começa no meio vertical da janela */
+    display: flex;   /* Ativa o Flexbox para organização interna */
+    flex-direction: column; /* Organiza os itens (botões) em uma coluna (um abaixo do outro) */
+    gap: 15px;       /* Cria um espaço de 15px entre os botões */
+    z-index: 1000;   /* Garante que o contêiner fique acima da maioria dos outros elementos */
+}
+

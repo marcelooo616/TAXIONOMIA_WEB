@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>TAXIONOMIA WEB</title>
+    <link rel="stylesheet" href="css/styles.css">
+	<link rel="stylesheet" href="css/templatesEmail.css">
+	<link rel="stylesheet" href="css/botaoLateral.css">
+    <link rel="stylesheet" href="css/refund.css">
+	<link rel="icon" href="./3064060.png" type="image/x-icon">
+
+
+</head>
+<body>
+
+<header>
+    <div class="title">TAXIONOMIA WEB</div>
+</header>
+
+
+
+
+<div class="container">
+    <div class="item-select-lob">
+        <label for="lob">LOB:</label>
+        <select id="lob" onchange="atualizarAreas()">
+            <option value="">Selecione</option>
+        </select>
+    </div>
+    <div class="item-select-productArea">
+        <label for="area">Product Area:</label>
+        <select id="area" onchange="atualizarProdutos()">
+            <option value="">Selecione</option>
+        </select>
+    </div>
+    <div class="item-select-lob-product">
+        <label for="produto">Product:</label>
+        <select id="produtoTaxonomia" onchange="atualizarTopicos()">
+            <option value="">Selecione</option>
+        </select>
+    </div>
+    <div class="item-select-topic">
+        <label for="topico">Topic:</label>
+        <select id="topico" onchange="atualizarSubtopicos()">
+            <option value="">Selecione</option>
+        </select>
+    </div>
+    <div class="item-select-subtopic">
+        <label for="subtopico">Subtopic:</label>
+        <select id="subtopico" onchange="mostrarResultado()">
+            <option value="">Selecione</option>
+        </select>
+    </div>
+</div>
+
+<div id="resultado"></div>
+<div class="box-buttons">
+    <button onclick="resetar()">Reset</button>
+    <button onclick="copiar()">Copiar</button>
+</div>
+
+
+<div id="botoesLateraisContainer"></div>
+
+
+
+<dialog id="dialogSubtopico">
+    <form method="dialog">
+        <label for="inputFrase">Especifique o cenário:</label><br>
+        <input type="text" id="inputFrase" name="inputFrase"><br><br>
+        <button id="btnOk">OK</button>
+        <button id="btnCancelar">Cancelar</button>
+    </form>
+</dialog>
+
+<div class="dialogo" id="dialogo">
+    <h3>Solicitação de Reembolso</h3>
+    <div class="containerInfo">
+        <div class="box-Sr-select">
+            <div class="item-sr">
+                <label for="sr">Número do SR</label>
+                <input type="text" id="sr" placeholder="Digite o número do SR">
+            </div>
+            <div class="item-select">
+                <label for="tipo">Tipo de Solicitação</label>
+                <select id="tipo" onchange="mostrarInformacoes()">
+                    <option value="">Selecione...</option>
+                </select>
+            </div>
+        </div>
+        <div class="section-info">
+            <span>Quando Usar</span>
+            <div class="box-quandoUsar"></div>
+            <span>Critérios</span>
+            <div class="box-criterios"></div>
+        </div>
+        <div class="info-refund" id="info-refund">
+            <div class="item-ref">
+                <label for="produto">Nome do produto</label>
+                <select id="produtoReembolso" onchange="preencherValor()">
+                    <option value="">Selecione um produto...</option>
+                </select>
+            </div>
+            <div class="item-ref">
+                <label for="valor">Valor</label>
+                <input type="text" id="valor" placeholder="Valor do produto" readonly>
+            </div>
+            <div class="item-ref">
+                <label for="data-compra">Data de compra</label>
+                <input type="date" id="data-compra">
+            </div>
+        </div>
+        <div class="item-OBS">
+            <label for="observacao">Observação</label>
+            <textarea id="observacao" class="textOBS" placeholder="Digite sua observação..." maxlength="1000"></textarea>
+        </div>
+    </div>
+    
+	<div class="botoes-dialogo">
+	  <button onclick="limparCampos()">Limpar Campos</button>
+	  <button onclick="gerarComentario()">Gerar Comentário</button>
+	  <button onclick="fecharDialogo()">Fechar</button>
+	</div>
+
+</div>
+
+<dialog id="dialogComentario">
+  <h3>Comentários Gerados</h3>
+  <div>
+    <strong>Comentário para CST:</strong>
+    <pre id="comentarioCST"></pre>
+    <button onclick="copiarTexto('comentarioCST')">Copiar CST</button>
+  </div>
+  <div style="margin-top: 20px;">
+    <strong>ABS:</strong>
+    <pre id="comentarioABS"></pre>
+    <button onclick="copiarTexto('comentarioABS')">Copiar ABS</button>
+  </div>
+  <button onclick="document.getElementById('dialogComentario').close()">Fechar</button>
+</dialog>
+
+
+
+
+<script type="module">
+  import { criarBotaoLateral } from '/components/botoaLateral.js';
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const containerBotoes = document.getElementById('botoesLateraisContainer');
+
+    const botaoRefund = criarBotaoLateral('💲', 'Refund', () => {
+        abrirDialogo();
+    });
+    containerBotoes.appendChild(botaoRefund);
+
+    const botaoEmails = criarBotaoLateral('📧', 'Emails', () => {
+      abrirDialogoEmail();
+    });
+    containerBotoes.appendChild(botaoEmails);
+
+
+    const botaoCaseNoteTool = criarBotaoLateral('📋', 'Emails', () => {
+      
+    });
+    containerBotoes.appendChild(botaoCaseNoteTool);
+  });
+</script>
+
+<script src="js/taxonomia.js"></script>
+<script src="js/reembolso.js"></script>
+<script src="js/templatesEmail.js"></script>
+<script type="module" src="js/main.js"></script>
+
+
+<footer>
+  <div class="assinatura-site">
+    Created by Marcelos Santos
+  </div>
+</footer>
+
+
+
+</body>
+</html>
