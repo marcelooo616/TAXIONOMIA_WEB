@@ -476,125 +476,137 @@ CASO CONTRÁRIO, UTILIZE A CALCULADORA`,
   
 ];
 
+// ======================================================
+// CÓDIGO JAVASCRIPT COMPLETO E CORRIGIDO
+// ======================================================
+
+// 1. Variável de estado declarada UMA VEZ no escopo global do script.
 let itemSelecionado = null;
 
- 
+// --- Funções Auxiliares (Preenchimento de Formulário) ---
+
 function preencherSelect() {
-  const select = document.getElementById('produtoReembolso');
-  if (select.options.length === 1) {
-    produtosMicrosoft.forEach(produto => {
-      const option = document.createElement('option');
-      option.value = produto.nome;
-      option.textContent = produto.nome;
-      select.appendChild(option);
-    });
-  }
+    const select = document.getElementById('produtoReembolso');
+    if (select.options.length === 1) { // Preenche apenas se estiver vazio
+        produtosMicrosoft.forEach(produto => {
+            const option = document.createElement('option');
+            option.value = produto.nome;
+            option.textContent = produto.nome;
+            select.appendChild(option);
+        });
+    }
 }
 
 function preencherValor() {
-  const nomeSelecionado = document.getElementById('produtoReembolso').value;
-  const produto = produtosMicrosoft.find(p => p.nome === nomeSelecionado);
-  document.getElementById('valor').value = produto ? produto.preco : '';
-}
-
-
-
-function abrirDialogo() {
-  document.getElementById('dialogo').style.display = 'flex';
-  preencherSelect();
-  const select = document.getElementById('tipo');
-  if (select.options.length === 1) {
-    dadosRefaund.forEach(item => {
-      const option = document.createElement('option');
-      option.value = item.request_type;
-      option.textContent = item.request_type;
-      select.appendChild(option);
-    });
-  }
-}
-
-function fecharDialogo() {
-  document.getElementById('dialogo').style.display = 'none';
-  document.getElementById('sr').value = '';
-  document.getElementById('tipo').value = '';
-  document.querySelector('.box-quandoUsar').innerHTML = '';
-  document.querySelector('.box-criterios').innerHTML = '';
-}
-
-function mostrarInformacoes() {
-  const tipoSelecionado = document.getElementById('tipo').value;
-  itemSelecionado = dadosRefaund.find(item => item.request_type === tipoSelecionado);
-
-  if (itemSelecionado) {
-    document.querySelector('.box-quandoUsar').innerHTML = formatarTexto(itemSelecionado.refund_criteria);
-    document.querySelector('.box-criterios').innerHTML = formatarTexto(itemSelecionado.scenario);
-  } else {
-    document.querySelector('.box-quandoUsar').innerHTML = '';
-    document.querySelector('.box-criterios').innerHTML = '';
-  }
-}
-
-function formatarTexto(texto) {
-  return texto
-    .split(' - ')
-    .filter(Boolean)
-    .map(linha => `<div>${linha.trim()}</div>`)
-    .join('');
-}
-
-
-function limparCampos() {
-  document.getElementById("sr").value = "";
-  document.getElementById("tipo").value = "";
-  document.getElementById("produtoReembolso").value = "";
-  document.getElementById("valor").value = "";
-  document.getElementById("data-compra").value = "";
-  document.getElementById("observacao").value = "";
+    const nomeSelecionado = document.getElementById('produtoReembolso').value;
+    const produto = produtosMicrosoft.find(p => p.nome === nomeSelecionado);
+    document.getElementById('valor').value = produto ? produto.preco : '';
 }
 
 function formatarDataBR(dataISO) {
-  if (!dataISO) return "[data não selecionada]";
-  const [ano, mes, dia] = dataISO.split("-");
-  return `${dia}/${mes}/${ano}`;
+    if (!dataISO) return "[data não selecionada]";
+    const [ano, mes, dia] = dataISO.split("-");
+    return `${dia}/${mes}/${ano}`;
+}
+
+function formatarTexto(texto) {
+    if (!texto) {
+        return '[]';
+    }
+    const itens = texto.split(' - ');
+    const itensLimpos = itens.filter(item => item.trim() !== '');
+    // CORREÇÃO: Removido um ` ` extra que estava sendo adicionado
+    const itensFormatados = itensLimpos.map(item => `- ${item.trim()}`); 
+    const corpoDoTexto = itensFormatados.join('\n');
+    // CORREÇÃO: Adicionado os colchetes que faltavam na versão anterior
+    return `[${corpoDoTexto}]`;
+}
+
+// --- Funções Principais do Dialog ---
+
+function abrirDialogo() {
+    document.getElementById('dialogOverlay').classList.add('visivel');
+    preencherSelect();
+    const select = document.getElementById('tipo');
+    if (select.options.length === 1) {
+        dadosRefaund.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.request_type;
+            option.textContent = item.request_type;
+            select.appendChild(option);
+        });
+    }
+}
+
+function fecharDialogo() {
+    document.getElementById('dialogOverlay').classList.remove('visivel');
+    limparCampos(); // Chama a função de limpeza para evitar código duplicado
+    itemSelecionado = null; // Reseta o estado
+}
+
+function mostrarInformacoes() {
+    const tipoSelecionado = document.getElementById('tipo').value;
+    
+    // ## CORREÇÃO CRÍTICA ##
+    // Removemos o "const" daqui. Agora estamos atribuindo o valor à variável
+    // global, em vez de criar uma nova variável local.
+    itemSelecionado = dadosRefaund.find(item => item.request_type === tipoSelecionado);
+
+    const boxQuandoUsar = document.getElementById('box-quandoUsar');
+    const boxCriterios = document.getElementById('box-criterios');
+
+    if (itemSelecionado) {
+        boxQuandoUsar.innerHTML = formatarTexto(itemSelecionado.refund_criteria);
+        boxCriterios.innerHTML = formatarTexto(itemSelecionado.scenario);
+    } else {
+        boxQuandoUsar.innerHTML = '';
+        boxCriterios.innerHTML = '';
+    }
 }
 
 function gerarComentario() {
-  const sr = document.getElementById("sr").value || "[SR não preenchido]";
-  const produto = document.getElementById("produtoReembolso").value || "[produto não selecionado]";
-  const valor = document.getElementById("valor").value || "[valor não informado]";
-  const dataCompraISO = document.getElementById("data-compra").value;
-  const dataCompra = formatarDataBR(dataCompraISO);
-  const obs = document.getElementById("observacao").value || "[sem observação]";
-  const hoje = new Date().toLocaleDateString("pt-BR");
+    // Agora 'itemSelecionado' terá o valor correto definido por mostrarInformacoes()
+    if (!itemSelecionado) {
+        alert("Por favor, selecione um Tipo de Solicitação válido antes de gerar o comentário.");
+        return; // Interrompe a função se nenhum item foi selecionado
+    }
 
-  const kbId = itemSelecionado?.kb_id || "[KB não definido]";
+    const sr = document.getElementById("sr").value || "[SR não preenchido]";
+    const produto = document.getElementById("produtoReembolso").value || "[produto não selecionado]";
+    const valor = document.getElementById("valor").value || "[valor não informado]";
+    const dataCompraISO = document.getElementById("data-compra").value;
+    const dataCompra = formatarDataBR(dataCompraISO);
+    const obs = document.getElementById("observacao").value || "[sem observação]";
+    const hoje = new Date().toLocaleDateString("pt-BR");
 
-  const comment = `${sr} | ${kbId}`;
+    const kbId = itemSelecionado.kb_id || "[KB não definido]"; // Não precisa mais do '?' se garantirmos que não é nulo
 
-  const abs = `A: Cliente deseja o reembolso do ${produto}
+    const comment = `${sr} | ${kbId}`;
+    const abs = `A: Cliente deseja o reembolso do ${produto}\n\nB: ${obs}\n\nS: Reembolsamos o valor de ${valor} utilizando os critérios da documentação: ${kbId}\n\nAmount Refunded: ${valor}\n\nEffective period of the product: ${dataCompra} to ${hoje}\n\nKB Article: ${kbId}`;
 
-B: ${obs}
+    document.getElementById("comentarioCST").textContent = comment;
+    document.getElementById("comentarioABS").textContent = abs;
 
-S: Reembolsamos o valor de ${valor} utilizando os critérios da documentação: ${kbId}
-
-Amount Refunded: ${valor}
-
-Effective period of the product: ${dataCompra} to ${hoje}
-
-KB Article: ${kbId}`;
-
-  document.getElementById("comentarioCST").textContent = comment;
-  document.getElementById("comentarioABS").textContent = abs;
-
-  document.getElementById("dialogComentario").showModal();
+    document.getElementById("dialogComentario").showModal();
 }
 
+// --- Funções de Ação (Botões) ---
 
+function limparCampos() {
+    // Centraliza toda a lógica de limpeza aqui
+    document.getElementById("sr").value = "";
+    document.getElementById("tipo").value = "";
+    document.getElementById("produtoReembolso").value = "";
+    document.getElementById("valor").value = "";
+    document.getElementById("data-compra").value = "";
+    document.getElementById("observacao").value = "";
+    document.getElementById('box-quandoUsar').innerHTML = '';
+    document.getElementById('box-criterios').innerHTML = '';
+}
 
 function copiarTexto(id) {
-  const texto = document.getElementById(id).textContent;
-  navigator.clipboard.writeText(texto).then(() => {
-    alert("Texto copiado com sucesso!");
-  });
+    const texto = document.getElementById(id).textContent;
+    navigator.clipboard.writeText(texto).then(() => {
+        alert("Texto copiado com sucesso!");
+    });
 }
-

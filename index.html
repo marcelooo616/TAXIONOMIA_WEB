@@ -73,55 +73,71 @@
     </form>
 </dialog>
 
-<div class="dialogo" id="dialogo">
-    <h3>Solicitação de Reembolso</h3>
-    <div class="containerInfo">
-        <div class="box-Sr-select">
-            <div class="item-sr">
-                <label for="sr">Número do SR</label>
-                <input type="text" id="sr" placeholder="Digite o número do SR">
-            </div>
-            <div class="item-select">
-                <label for="tipo">Tipo de Solicitação</label>
-                <select id="tipo" onchange="mostrarInformacoes()">
-                    <option value="">Selecione...</option>
-                </select>
-            </div>
-        </div>
-        <div class="section-info">
-            <span>Quando Usar</span>
-            <div class="box-quandoUsar"></div>
-            <span>Critérios</span>
-            <div class="box-criterios"></div>
-        </div>
-        <div class="info-refund" id="info-refund">
-            <div class="item-ref">
-                <label for="produto">Nome do produto</label>
-                <select id="produtoReembolso" onchange="preencherValor()">
-                    <option value="">Selecione um produto...</option>
-                </select>
-            </div>
-            <div class="item-ref">
-                <label for="valor">Valor</label>
-                <input type="text" id="valor" placeholder="Valor do produto" readonly>
-            </div>
-            <div class="item-ref">
-                <label for="data-compra">Data de compra</label>
-                <input type="date" id="data-compra">
-            </div>
-        </div>
-        <div class="item-OBS">
-            <label for="observacao">Observação</label>
-            <textarea id="observacao" class="textOBS" placeholder="Digite sua observação..." maxlength="1000"></textarea>
-        </div>
-    </div>
-    
-	<div class="botoes-dialogo">
-	  <button onclick="limparCampos()">Limpar Campos</button>
-	  <button onclick="gerarComentario()">Gerar Comentário</button>
-	  <button onclick="fecharDialogo()">Fechar</button>
-	</div>
 
+
+<div class="dialog-overlay" id="dialogOverlay">
+    
+    <form class="reembolso-form" id="dialogo" onclick="event.stopPropagation()">
+        
+        <header class="reembolso-header">
+            <h3>Solicitação de Reembolso</h3>
+        </header>
+
+        <main class="reembolso-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="sr">Número do SR</label>
+                    <input type="text" id="sr" placeholder="Digite o número do SR">
+                </div>
+                <div class="form-group">
+                    <label for="tipo">Tipo de Solicitação</label>
+                    <select id="tipo" onchange="mostrarInformacoes()">
+                        <option value="">Selecione...</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="info-contextual">
+                 <div class="info-item">
+                    <span>Quando Usar</span>
+                    <div class="box-info" id="box-quandoUsar"></div>
+                </div>
+                <div class="info-item">
+                    <span>Critérios</span>
+                    <div class="box-info" id="box-criterios"></div>
+                </div>
+            </div>
+
+            <div class="form-row" id="info-refund">
+                <div class="form-group">
+                    <label for="produtoReembolso">Nome do produto</label>
+                    <select id="produtoReembolso" onchange="preencherValor()">
+                        <option value="">Selecione um produto...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="valor">Valor</label>
+                    <input type="text" id="valor" placeholder="Valor do produto" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="data-compra">Data de compra</label>
+                    <input type="date" id="data-compra">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="observacao">Observação</label>
+                <textarea id="observacao" placeholder="Digite sua observação..." maxlength="1000"></textarea>
+            </div>
+        </main>
+
+        <footer class="reembolso-footer">
+            <button type="button" class="btn btn-secondary" onclick="limparCampos()">Limpar Campos</button>
+            <button type="button" class="btn btn-tertiary" onclick="fecharDialogo()">Fechar</button>
+            <button type="button" class="btn btn-primary" onclick="gerarComentario()">Gerar Comentário</button>
+        </footer>
+
+    </form>
 </div>
 
 <dialog id="dialogComentario">
@@ -159,8 +175,8 @@
     containerBotoes.appendChild(botaoEmails);
 
 
-    const botaoCaseNoteTool = criarBotaoLateral('📋', 'Emails', () => {
-      
+    const botaoCaseNoteTool = criarBotaoLateral('📋', 'Case Note Tool', () => {
+        window.open('Case Note Tool MLCSv2.html', '_blank');
     });
     containerBotoes.appendChild(botaoCaseNoteTool);
   });
