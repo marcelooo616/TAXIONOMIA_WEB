@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notion Clone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f7f6f3;
+            --text-primary: #37352f;
+            --text-secondary: #787774;
+            --accent-color: #37352f;
+            --border-color: #e6e5e2;
+        }
+
+        .dark {
+            --bg-primary: #2d2d2d;
+            --bg-secondary: #1f1f1f;
+            --text-primary: #f7f7f5;
+            --text-secondary: #b3b3b1;
+            --accent-color: #f7f7f5;
+            --border-color: #4a4a4a;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .content-block {
+            padding: 3px 2px;
+            margin: 1px 0;
+            outline: none;
+            min-height: 24px;
+        }
+
+        .content-block:focus {
+            background-color: var(--bg-secondary);
+        }
+
+        .drag-handle {
+            opacity: 0;
+            cursor: move;
+        }
+
+        .block-container:hover .drag-handle {
+            opacity: 0.3;
+        }
+
+        .bullet {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <div class="w-64 bg-white dark:bg-[#1f1f1f] border-r border-gray-200 dark:border-gray-700 flex flex-col p-4">
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/cd6e07d5-0d15-4f1e-9131-11115b646b2d.png" alt="Logo do Notion Clone com design minimalista em preto e branco" 
+                     class="w-8 h-8 rounded mr-2">
+                <span class="font-semibold">Notion Clone</span>
+            </div>
+            <button id="theme-toggle" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/b468bd66-b993-457b-9bb1-935699e27538.png" alt="Ícone de alternar tema entre claro e escuro" class="w-6 h-6">
+            </button>
+        </div>
+
+        <div class="mb-6">
+            <div class="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-2 px-2">
+                <span>Espaço de trabalho</span>
+            </div>
+            <div class="space-y-1">
+                <a href="#" class="flex items-center px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-sm">
+                    <span class="mr-2">📄</span>
+                    <span>Página inicial</span>
+                </a>
+                <a href="#" class="flex items-center px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-sm">
+                    <span class="mr-2">📋</span>
+                    <span>Tarefas</span>
+                </a>
+                <a href="#" class="flex items-center px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-sm">
+                    <span class="mr-2">📅</span>
+                    <span>Calendário</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="mb-6">
+            <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-2 px-2">
+                <span>Páginas</span>
+                <button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">+</button>
+            </div>
+            <div class="space-y-1">
+                <a href="#" class="flex items-center px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-sm">
+                    <span class="w-4 h-4 mr-2 border border-gray-300 dark:border-gray-600 rounded-sm"></span>
+                    <span>Projeto Web</span>
+                </a>
+                <a href="#" class="flex items-center px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-sm">
+                    <span class="w-4 h-4 mr-2 border border-gray-300 dark:border-gray-600 rounded-sm"></span>
+                    <span>Lista de Leituras</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Toolbar -->
+        <div class="border-b border-gray-200 dark:border-gray-700 p-2 flex items-center space-x-2">
+            <button class="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/44981864-a3c2-4cf5-9327-65577432bf91.png" alt="Ícone de voltar" class="w-4 h-4">
+            </button>
+            <button class="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/95734e76-66c7-4ee7-b860-1db0eb7b78ac.png" alt="Ícone de avançar" class="w-4 h-4">
+            </button>
+            <button class="text-sm px-3 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                Compartilhar
+            </button>
+        </div>
+
+        <!-- Page Content -->
+        <div class="flex-1 overflow-auto p-6">
+            <!-- Page Title -->
+            <div class="max-w-4xl mx-auto">
+                <div class="flex items-center mb-6">
+                    <div class="w-8 h-8 mr-2 bg-gray-200 dark:bg-gray-600 rounded-sm"></div>
+                    <div contenteditable="true" class="content-block text-3xl font-bold w-full" data-placeholder="Título sem nome">
+                        Página inicial
+                    </div>
+                </div>
+
+                <!-- Content Blocks -->
+                <div id="blocks-container" class="space-y-1">
+                    <!-- Paragraph Block -->
+                    <div class="block-container group flex items-start">
+                        <div class="drag-handle w-4 h-4 mt-2 mr-1 text-gray-400 dark:text-gray-500">≡</div>
+                        <div contenteditable="true" class="content-block flex-1" data-placeholder="Digite '/' para comandos">
+                            Bem-vindo ao seu Notion Clone! Comece a digitar ou use o menu de comandos com '/'.
+                        </div>
+                    </div>
+
+                    <!-- Heading Block -->
+                    <div class="block-container group flex items-start mt-6">
+                        <div class="drag-handle w-4 h-4 mt-2 mr-1 text-gray-400 dark:text-gray-500">≡</div>
+                        <div contenteditable="true" class="content-block flex-1 text-xl font-semibold mt-2" data-placeholder="Cabeçalho">
+                            Introdução
+                        </div>
+                    </div>
+
+                    <!-- Bullet List Block -->
+                    <div class="block-container group flex items-start mt-4">
+                        <div class="drag-handle w-4 h-4 mt-2 mr-1 text-gray-400 dark:text-gray-500">≡</div>
+                        <div class="flex-1 flex items-start">
+                            <span class="bullet mt-1 mr-2">•</span>
+                            <div contenteditable="true" class="content-block flex-1" data-placeholder="Lista de itens">
+                                Criar uma página nova
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bullet List Block -->
+                    <div class="block-container group flex items-start">
+                        <div class="drag-handle w-4 h-4 mt-2 mr-1 text-gray-400 dark:text-gray-500">≡</div>
+                        <div class="flex-1 flex items-start">
+                            <span class="bullet mt-1 mr-2">•</span>
+                            <div contenteditable="true" class="content-block flex-1" data-placeholder="Lista de itens">
+                                Adicionar diferentes tipos de blocos
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Callout Block -->
+                    <div class="block-container group flex items-start mt-6">
+                        <div class="drag-handle w-4 h-4 mt-2 mr-1 text-gray-400 dark:text-gray-500">≡</div>
+                        <div class="flex-1 p-3 bg-yellow-50 dark:bg-yellow-900/30 rounded flex items-start">
+                            <span class="mr-2">💡</span>
+                            <div contenteditable="true" class="content-block flex-1" data-placeholder="Dica ou informação importante">
+                                Dica: Pressione Enter para criar um novo bloco automaticamente.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle theme
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark');
+            localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+        });
+
+        // Check for saved theme preference
+        if (localStorage.getItem('theme') === 'dark' || 
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.body.classList.add('dark');
+        } else {
+            document.body.classList.remove('dark');
+        }
+
+        // Add placeholder text for empty content blocks
+        document.querySelectorAll('[contenteditable=true]').forEach(element => {
+            const placeholder = element.getAttribute('data-placeholder');
+            
+            element.addEventListener('focus', function() {
+                if (element.textContent.trim() === placeholder) {
+                    element.textContent = '';
+                }
+            });
+            
+            element.addEventListener('blur', function() {
+                if (element.textContent.trim() === '') {
+                    element.textContent = placeholder;
+                }
+            });
+        });
+
+        // Create new blocks on Enter key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && document.activeElement.hasAttribute('contenteditable')) {
+                e.preventDefault();
+                const currentBlock = document.activeElement.closest('.block-container');
+                
+                if (currentBlock) {
+                    const newBlock = currentBlock.cloneNode(true);
+                    const editableElement = newBlock.querySelector('[contenteditable=true]');
+                    editableElement.textContent = editableElement.getAttribute('data-placeholder');
+                    
+                    currentBlock.parentNode.insertBefore(newBlock, currentBlock.nextSibling);
+                    editableElement.focus();
+                    window.getSelection().selectAllChildren(editableElement);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+

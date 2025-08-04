@@ -516,10 +516,10 @@ function formatarTexto(texto) {
     const itens = texto.split(' - ');
     const itensLimpos = itens.filter(item => item.trim() !== '');
     // CORREÇÃO: Removido um ` ` extra que estava sendo adicionado
-    const itensFormatados = itensLimpos.map(item => `- ${item.trim()}`); 
+    const itensFormatados = itensLimpos.map(item => `${item.trim()}`); 
     const corpoDoTexto = itensFormatados.join('\n');
     // CORREÇÃO: Adicionado os colchetes que faltavam na versão anterior
-    return `[${corpoDoTexto}]`;
+    return `${corpoDoTexto}`;
 }
 
 // --- Funções Principais do Dialog ---

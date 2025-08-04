@@ -8,6 +8,13 @@
 	<link rel="stylesheet" href="css/botaoLateral.css">
     <link rel="stylesheet" href="css/refund.css">
 	<link rel="icon" href="./3064060.png" type="image/x-icon">
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+
+    <!-- Importando ícones do Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
 
 </head>
@@ -76,69 +83,138 @@
 
 
 <div class="dialog-overlay" id="dialogOverlay">
-    
     <form class="reembolso-form" id="dialogo" onclick="event.stopPropagation()">
         
         <header class="reembolso-header">
-            <h3>Solicitação de Reembolso</h3>
+            <h3><i class="ph-bold ph-receipt"></i> Solicitação de Reembolso</h3>
         </header>
 
         <main class="reembolso-body">
             <div class="form-row">
                 <div class="form-group">
                     <label for="sr">Número do SR</label>
-                    <input type="text" id="sr" placeholder="Digite o número do SR">
+                    <div class="input-wrapper">
+                        <input type="text" id="sr" placeholder="Digite o número do SR">
+                        <i class="ph ph-hash"></i>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="tipo">Tipo de Solicitação</label>
-                    <select id="tipo" onchange="mostrarInformacoes()">
-                        <option value="">Selecione...</option>
-                    </select>
+                    <div class="input-wrapper">
+                        <select id="tipo" onchange="mostrarInformacoes()">
+                            <option value="">Selecione...</option>
+                        </select>
+                        <i class="ph ph-list-bullets"></i>
+                    </div>
                 </div>
             </div>
             
             <div class="info-contextual">
-                 <div class="info-item">
-                    <span>Quando Usar</span>
-                    <div class="box-info" id="box-quandoUsar"></div>
+                <div class="info-item">
+                    <span><i class="ph-fill ph-question"></i> Quando Usar</span>
+                    <div class="box-info" id="box-quandoUsar">Selecione um tipo de solicitação para ver as informações.</div>
                 </div>
                 <div class="info-item">
-                    <span>Critérios</span>
+                    <span><i class="ph-fill ph-check-circle"></i> Critérios</span>
                     <div class="box-info" id="box-criterios"></div>
                 </div>
-            </div>
+            </div> 
 
             <div class="form-row" id="info-refund">
                 <div class="form-group">
                     <label for="produtoReembolso">Nome do produto</label>
-                    <select id="produtoReembolso" onchange="preencherValor()">
-                        <option value="">Selecione um produto...</option>
-                    </select>
+                    <div class="input-wrapper">
+                        <select id="produtoReembolso" onchange="preencherValor()">
+                            <option value="">Selecione um produto...</option>
+                        </select>
+                        <i class="ph ph-package"></i>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="valor">Valor</label>
-                    <input type="text" id="valor" placeholder="Valor do produto" readonly>
+                    <div class="input-wrapper">
+                        <input type="text" id="valor" placeholder="R$ 0,00" readonly>
+                        <i class="ph ph-money"></i>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="data-compra">Data de compra</label>
-                    <input type="date" id="data-compra">
+                    <div class="input-wrapper">
+                        <input type="date" id="data-compra">
+                        <i class="ph ph-calendar"></i>
+                    </div>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="observacao">Observação</label>
-                <textarea id="observacao" placeholder="Digite sua observação..." maxlength="1000"></textarea>
+                <textarea id="observacao" placeholder="Adicione detalhes importantes sobre a solicitação..." maxlength="1000"></textarea>
             </div>
         </main>
 
         <footer class="reembolso-footer">
-            <button type="button" class="btn btn-secondary" onclick="limparCampos()">Limpar Campos</button>
-            <button type="button" class="btn btn-tertiary" onclick="fecharDialogo()">Fechar</button>
-            <button type="button" class="btn btn-primary" onclick="gerarComentario()">Gerar Comentário</button>
+            <button type="button" class="btn btn-secondary" onclick="limparCampos()"><i class="ph ph-eraser"></i> Limpar</button>
+            <button type="button" class="btn btn-tertiary" onclick="fecharDialogo()"><i class="ph ph-x"></i> Fechar</button>
+            <button type="button" class="btn btn-primary" onclick="gerarComentario()"><i class="ph ph-paper-plane-tilt"></i> Gerar Comentário</button>
         </footer>
 
     </form>
 </div>
+
+<div class="custom-alert-overlay" id="customAlert">
+    <div class="custom-alert-box">
+        <div class="custom-alert-icon">
+            <i class="ph-bold"></i>
+        </div>
+        <div class="custom-alert-content">
+            <h4 class="custom-alert-title">Título do Alerta</h4>
+            <p class="custom-alert-message">Mensagem do alerta aqui.</p>
+        </div>
+        <div class="custom-alert-close" id="customAlertClose">&times;</div>
+    </div>
+</div>
+
+ <div class="busca-dialog-overlay" id="searchDialog">
+        <div class="busca-container" onclick="event.stopPropagation()">
+            <header class="busca-header">
+                <h2><i class="ph-bold ph-microsoft-logo"></i>Central de Busca de Suporte</h2>
+                <p>Encontre soluções no ecossistema Microsoft de forma rápida e precisa.</p>
+            </header>
+            
+            <div class="busca-body">
+                <textarea id="searchInput" rows="3" placeholder="Cole o texto estruturado (ex: MLTS | Windows | ...) ou digite sua dúvida."></textarea>
+                
+                <div class="busca-filter-grid">
+                   
+                    <div class="busca-filter-group" id="sourceFilters">
+                        <h3><i class="ph ph-globe"></i> Fontes de Busca</h3>
+                        <div class="busca-checkbox-group">
+                            <label><input type="checkbox" value="answers" checked> Comunidade</label>
+                            <label><input type="checkbox" value="learn"> Microsoft Learn (Docs)</label>
+                            <label><input type="checkbox" value="techcommunity"> Tech Community</label>
+                        </div>
+                    </div>
+                    <div class="busca-filter-group" id="typeFilters">
+                        <h3><i class="ph ph-funnel"></i> Tipo de Busca</h3>
+                        <div class="busca-radio-group">
+                            <label><input type="radio" name="searchType" value="flexible" checked> Flexível</label>
+                            <label><input type="radio" name="searchType" value="direct"> Direta (Frase Exata)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <footer class="busca-footer">
+                <button class="busca-btn busca-btn-secondary" onclick="fecharDialogoBusca()">
+                    <i class="ph ph-x"></i> Fechar
+                </button>
+                <button class="busca-btn busca-btn-primary" onclick="executeSearch()">
+                    <i class="ph ph-magnifying-glass"></i> Buscar Agora
+                </button>
+            </footer>
+        </div>
+    </div>
+
 
 <dialog id="dialogComentario">
   <h3>Comentários Gerados</h3>
@@ -155,7 +231,54 @@
   <button onclick="document.getElementById('dialogComentario').close()">Fechar</button>
 </dialog>
 
-
+  <div class="n2-dialog-overlay" id="n2Dialog">
+        <div class="n2-container">
+            <header class="n2-header">
+                <h2><i class="ph-bold ph-file-text"></i>Gerador de Template para T2</h2>
+            </header>
+            
+            <div class="n2-body">
+                <div class="n2-form-area">
+                    <h3>Informações do Caso</h3>
+                    <div class="n2-form-group">
+                        <label for="n2-problem">Problema Relatado</label>
+                        <textarea id="n2-problem" rows="3" oninput="atualizarTemplate()"></textarea>
+                    </div>
+                    <div class="n2-form-group">
+                        <label>O que foi feito</label>
+                        <div class="n2-input-group">
+                            <input type="text" id="n2-step-input" placeholder="Adicione um passo...">
+                            <button class="n2-btn-add" onclick="adicionarPassoN2()">
+                                <i class="ph ph-plus"></i>
+                            </button>
+                        </div>
+                        <ul id="n2-steps-list"></ul>
+                    </div>
+                    <div class="n2-form-group">
+                        <label for="n2-obs">Observações Adicionais</label>
+                        <textarea id="n2-obs" rows="3" oninput="atualizarTemplate()"></textarea>
+                    </div>
+                </div>
+                <div class="n2-preview-area">
+                    <h3>Pré-visualização do Template</h3>
+                    <textarea id="n2-preview" readonly></textarea>
+                </div>
+            </div>
+            
+            <!-- ✅ CORREÇÃO: Botões agora são filhos diretos do footer -->
+            <footer class="n2-footer">
+                <button class="n2-btn n2-btn-tertiary" onclick="limparCamposN2()">
+                    <i class="ph ph-eraser"></i> Limpar Campos
+                </button>
+                <button class="n2-btn n2-btn-secondary" onclick="fecharDialogoN2()">
+                    <i class="ph ph-x"></i> Fechar
+                </button>
+                <button class="n2-btn n2-btn-primary" onclick="copiarTemplateN2(this)">
+                    <i class="ph ph-copy"></i> Copiar Template
+                </button>
+            </footer>
+        </div>
+    </div>
 
 
 <script type="module">
@@ -179,6 +302,16 @@
         window.open('Case Note Tool MLCSv2.html', '_blank');
     });
     containerBotoes.appendChild(botaoCaseNoteTool);
+
+    const botaoCentralDeBusca = criarBotaoLateral('🔎', 'Central de Busca', () => {
+        abrirDialogoBusca();
+    });
+    containerBotoes.appendChild(botaoCentralDeBusca);
+
+    const botaoT2 = criarBotaoLateral('🥈', 'T2', () => {
+       abrirDialogoN2();
+    });
+    containerBotoes.appendChild(botaoT2);
   });
 </script>
 
@@ -186,6 +319,258 @@
 <script src="js/reembolso.js"></script>
 <script src="js/templatesEmail.js"></script>
 <script type="module" src="js/main.js"></script>
+<script>
+        const n2Dialog = document.getElementById('n2Dialog');
+        const n2Container = document.querySelector('.n2-container');
+        const n2ProblemInput = document.getElementById('n2-problem');
+        const n2StepInput = document.getElementById('n2-step-input');
+        const n2StepsList = document.getElementById('n2-steps-list');
+        const n2ObsInput = document.getElementById('n2-obs');
+        const n2Preview = document.getElementById('n2-preview');
+
+        function abrirDialogoN2() {
+            n2Dialog.classList.add('visivel');
+        }
+
+        function fecharDialogoN2() {
+            n2Dialog.classList.remove('visivel');
+        }
+
+        n2Container.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+        
+        n2Dialog.addEventListener('click', (event) => {
+            if (event.target === n2Dialog) {
+                fecharDialogoN2();
+            }
+        });
+        
+        n2StepInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                adicionarPassoN2();
+            }
+        });
+
+        function adicionarPassoN2() {
+            const text = n2StepInput.value.trim();
+            if (!text) return;
+
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span>${text}</span>
+                <button onclick="this.parentElement.remove(); atualizarTemplate();"><i class="ph ph-trash"></i></button>
+            `;
+            n2StepsList.appendChild(li);
+            n2StepInput.value = '';
+            n2StepInput.focus();
+            atualizarTemplate();
+        }
+
+        function atualizarTemplate() {
+            const problem = n2ProblemInput.value.trim();
+            const obs = n2ObsInput.value.trim();
+            const steps = Array.from(n2StepsList.querySelectorAll('li span')).map((span, index) => `${index + 1}. ${span.textContent}`);
+
+            const template = `Problema Relatado:
+${problem || "..."}
+---
+O que foi feito:
+${steps.length > 0 ? steps.join('\n') : "..."}
+---
+Observações Adicionais:
+${obs || "..."}
+---
+Conclusão:
+O problema persiste, o que pode ser feito neste cenário.`;
+
+            n2Preview.value = template;
+        }
+
+        function copiarTemplateN2(copyButton) {
+            n2Preview.select();
+            n2Preview.setSelectionRange(0, 99999); // Para mobile
+
+            try {
+                document.execCommand('copy');
+                copyButton.innerHTML = '<i class="ph ph-check"></i> Copiado!';
+                setTimeout(() => {
+                    copyButton.innerHTML = '<i class="ph ph-copy"></i> Copiar Template';
+                }, 2500);
+            } catch (err) {
+                alert('Erro ao copiar o template.');
+            }
+        }
+        
+        function limparCamposN2() {
+            n2ProblemInput.value = '';
+            n2ObsInput.value = '';
+            n2StepsList.innerHTML = '';
+            atualizarTemplate(); 
+        }
+
+        // Inicializa o template ao abrir
+        atualizarTemplate();
+    </script>
+<script>
+    // --- LÓGICA DO ALERTA PERSONALIZADO ---
+    const customAlert = document.getElementById('customAlert');
+    const customAlertClose = document.getElementById('customAlertClose');
+
+    /**
+     * Mostra um alerta personalizado na tela.
+     * @param {string} type - O tipo de alerta ('success', 'warning', 'error').
+     * @param {string} title - O título do alerta.
+     * @param {string} message - A mensagem principal do alerta.
+     */
+    function showAlert(type, title, message) {
+        const alertBox = customAlert.querySelector('.custom-alert-box');
+        const icon = customAlert.querySelector('.ph-bold');
+        const alertTitle = customAlert.querySelector('.custom-alert-title');
+        const alertMessage = customAlert.querySelector('.custom-alert-message');
+
+        // Reseta as classes para evitar acúmulo
+        alertBox.className = 'custom-alert-box';
+        icon.className = 'ph-bold';
+
+        // Define o conteúdo
+        alertTitle.textContent = title;
+        alertMessage.textContent = message;
+
+        // Aplica o estilo e ícone corretos
+        switch (type) {
+            case 'success':
+                alertBox.classList.add('success');
+                icon.classList.add('ph-check-circle');
+                break;
+            case 'warning':
+                alertBox.classList.add('warning');
+                icon.classList.add('ph-warning');
+                break;
+            case 'error':
+                alertBox.classList.add('error');
+                icon.classList.add('ph-x-circle');
+                break;
+        }
+
+        // Mostra o alerta
+        customAlert.classList.add('visivel');
+    }
+
+    // Evento para fechar o alerta
+    function hideAlert() {
+        customAlert.classList.remove('visivel');
+    }
+    customAlertClose.addEventListener('click', hideAlert);
+    customAlert.addEventListener('click', (event) => {
+        // Fecha se clicar no fundo (overlay)
+        if (event.target === customAlert) {
+            hideAlert();
+        }
+    });
+
+
+    // --- LÓGICA DE VALIDAÇÃO DA DATA (ATUALIZADA) ---
+    document.getElementById('data-compra').addEventListener('change', function () {
+        const inputData = this.value;
+        if (!inputData) return;
+
+        const dataCompra = new Date(inputData);
+        const hoje = new Date();
+
+        // Ignora o fuso horário e as horas para comparar apenas as datas
+        dataCompra.setUTCHours(0, 0, 0, 0);
+        hoje.setUTCHours(0, 0, 0, 0);
+
+        const diffTime = hoje.getTime() - dataCompra.getTime();
+        const diffDias = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDias > 30) {
+            showAlert("error", "Reembolso Negado", "A compra foi feita há mais de 30 dias.");
+        } else if (diffDias < 0) {
+            showAlert("warning", "Data Inválida", "A data da compra não pode ser no futuro.");
+        } else {
+            showAlert("success", "Reembolso Disponível", "A compra está dentro do prazo de 30 dias.");
+        }
+    });
+</script>
+<!--CENTRAL DE BUSCA-->
+<script>
+        const searchDialog = document.getElementById('searchDialog');
+        const searchInput = document.getElementById('searchInput');
+        const searchSources = {
+            'answers': 'site:answers.microsoft.com/pt-br/',
+            'learn': 'site:learn.microsoft.com/pt-br/',
+            'techcommunity': 'site:techcommunity.microsoft.com/'
+        };
+
+        function abrirDialogoBusca() {
+            searchDialog.classList.add('visivel');
+        }
+
+        function fecharDialogoBusca() {
+            searchDialog.classList.remove('visivel');
+        }
+
+         // Impede que cliques dentro do diálogo fechem o modal
+        searchContainer.addEventListener('click', (event) => {
+            event.stopPropagation();
+        });
+
+        // Fecha o diálogo se o usuário clicar no fundo escuro (overlay)
+        searchDialog.addEventListener('click', (event) => {
+            if (event.target === searchDialog) {
+                fecharDialogoBusca();
+            }
+        });
+
+        function getSelectedFilters(groupId) {
+            const filters = [];
+            document.querySelectorAll(`#${groupId} input:checked`).forEach(input => {
+                filters.push(input.value);
+            });
+            return filters;
+        }
+
+        function executeSearch() {
+            let mainQuery = searchInput.value.trim();
+            if (!mainQuery) {
+                alert("Por favor, insira um termo para buscar.");
+                return;
+            }
+
+            let processedQuery = mainQuery;
+            if (mainQuery.includes('|')) {
+                processedQuery = mainQuery
+                    .replace(/MLTS\s*\|\s*/gi, '')
+                    .replace(/\|/g, ' ');
+            }
+
+            const products = getSelectedFilters('productFilters');
+            const sources = getSelectedFilters('sourceFilters');
+            const searchType = document.querySelector('input[name="searchType"]:checked').value;
+
+            if (sources.length === 0) {
+                alert("Por favor, selecione pelo menos uma fonte de busca.");
+                return;
+            }
+
+            let fullQuery = [processedQuery, ...products].join(' ');
+
+            if (searchType === 'direct') {
+                fullQuery = `"${fullQuery}"`;
+            }
+            
+            const encodedQuery = encodeURIComponent(fullQuery);
+
+            sources.forEach(sourceKey => {
+                const siteUrl = searchSources[sourceKey];
+                const searchUrl = `https://www.google.com/search?q=${siteUrl} ${encodedQuery}`;
+                window.open(searchUrl, '_blank');
+            });
+        }
+    </script>
 
 
 <footer>

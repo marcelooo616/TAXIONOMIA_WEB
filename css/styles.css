@@ -4,6 +4,22 @@
             --tp-light-gray: #f2f2f2;
             --tp-dark-gray: #444;
             --tp-white: #ffffff;
+            --primary-color: #6c5ce7; /* Roxo vibrante */
+            --primary-hover: #5847d1;
+            --secondary-color: #f1f3f5;
+            --info-bg: rgba(0, 123, 255, 0.05);
+            --secondary-hover: #e9ecef;
+             --radius: 12px;
+            --danger-color: #e74c3c;
+            --danger-hover: #c0392b;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --background-light: #ffffff;
+            --border-color: rgba(255, 255, 255, 0.2);
+            --shadow-color: rgba(0, 0, 0, 0.15);
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+           
 		
         }	
 
@@ -193,3 +209,312 @@
 		
 		
 		
+ /* --- Estilos do Diálogo de Busca (com classes e cores atualizadas) --- */
+        .busca-dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 30, 45, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(6px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .busca-dialog-overlay.visivel {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .busca-container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 700px;
+            padding: 35px;
+            border: 1px solid #e7eaf3;
+            transform: scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .busca-dialog-overlay.visivel .busca-container {
+            transform: scale(1);
+        }
+
+        .busca-header {
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            margin-bottom: 30px;
+            background-color: var(--tp-blue);
+            border-radius: 12px;
+            
+        }
+
+        .busca-header h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--background-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .busca-header h2 .ph { color: #0078D7; }
+        .busca-header p { margin: 0; color: var(--background-light) font-size: 1rem; }
+        
+        .busca-body {
+            overflow-y: auto;
+            padding-right: 15px;
+            margin-right: -15px;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 14px 18px;
+            font-size: 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+            box-sizing: border-box;
+            transition: all 0.2s ease-in-out;
+            resize: vertical;
+            margin-bottom: 25px;
+        }
+        #searchInput:focus {
+            outline: none;
+            border-color: #0078D7;
+            box-shadow: 0 0 0 4px rgba(0, 123, 215, 0.15);
+        }
+
+        .busca-filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .busca-filter-group h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #495057;
+            margin: 0 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .busca-checkbox-group label, .busca-radio-group label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+        .busca-checkbox-group input, .busca-radio-group input {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            accent-color: #0078D7;
+        }
+        
+        .busca-footer {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .busca-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .busca-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .busca-btn-primary { background-color: #0078D7; color: white; }
+        .busca-btn-secondary { background-color: #6c757d; color: white; }
+
+
+         /* --- Estilos do Diálogo --- */
+        .n2-dialog-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 30, 45, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(6px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .n2-dialog-overlay.visivel {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .n2-container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 850px;
+            border: 1px solid #e7eaf3;
+            transform: scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .n2-dialog-overlay.visivel .n2-container {
+            transform: scale(1);
+        }
+
+        .n2-header {
+            padding: 25px 35px;
+            border-bottom: 1px solid #eee;
+            
+        }
+        .n2-header h2 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .n2-header h2 .ph { color: #0078D7; }
+        
+        .n2-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px 35px;
+            overflow-y: auto;
+        }
+
+        .n2-form-area h3, .n2-preview-area h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #495057;
+            margin: 0 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .n2-form-group {
+            margin-bottom: 20px;
+        }
+        .n2-form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
+        }
+        .n2-form-group textarea, .n2-form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+        .n2-form-group textarea { min-height: 100px; }
+        
+        .n2-input-group { display: flex; gap: 10px; }
+        .n2-btn-add {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            background-color: #28a745;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        #n2-steps-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+        #n2-steps-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        #n2-steps-list button { background: none; border: none; cursor: pointer; color: #dc3545; }
+
+        .n2-preview-area textarea {
+            width: 100%;
+            height: 95%;
+            box-sizing: border-box;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9rem;
+            background-color: #f8f9fa;
+            resize: none;
+        }
+        
+        .n2-footer {
+            margin-top: auto;
+            padding: 25px 35px;
+            border-top: 1px solid #eee;
+            display: flex;
+            /* ✅ CORREÇÃO: Alinha todos os botões à direita */
+            justify-content: flex-end;
+            gap: 10px; /* ✅ Adiciona espaçamento entre os botões */
+            background-color: #f8f9fa;
+        }
+
+        .n2-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .n2-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .n2-btn-primary { background-color: #0078D7; color: white; }
+        .n2-btn-secondary { background-color: #6c757d; color: white; }
+        .n2-btn-tertiary { background-color: #ffc107; color: #212529; }

@@ -1,93 +1,158 @@
-.dialog-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.5); /* Fundo escuro semi-transparente */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  backdrop-filter: blur(5px); /* Efeito blur no fundo */
-}
+ .dialog-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 30, 45, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(8px) saturate(120%);
+            animation: fadeIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+        }
 
-.dialog-content {
-  background: #ffffff;
-  padding: 30px 40px;
-  border-radius: 12px;
-  max-width: 420px;
-  width: 90%;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #333;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  
-}
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.99); }
+            to { opacity: 1; transform: scale(1); }
+        }
 
-.dialog-content h2 {
-  margin: 0 0 15px 0;
-  color: var(--tp-white); /* Azul Microsoft */
-  font-weight: 700;
-  font-size: 24px;
-  text-align: center;
-}
+        /* Conteúdo do Diálogo (Efeito "Glassmorphism") */
+        .dialog-content {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 35px 45px;
+            border-radius: 20px;
+            max-width: 900px; 
+            width: 95%;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-.dialog-content label {
-  font-weight: 600;
-  margin-bottom: 5px;
-  color: #555;
-}
+        .dialog-content h2 {
+            margin: 0 0 30px 0;
+            color: var(--tp-light-gray);
+            font-weight: 700;
+            font-size: 28px;
+            text-align: center;
+            width: 100%;
+            
+        }
 
-.dialog-content input[type="text"] {
-  padding: 10px 12px;
-  font-size: 16px;
-  border: 1.5px solid #ccc;
-  border-radius: 6px;
-  outline-color: #0078D7;
-  transition: border-color 0.3s ease;
-}
+        /* Corpo do Diálogo com as duas colunas */
+        .dialog-body {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 100%;
+            gap: 50px; 
+        }
 
-.dialog-content input[type="text"]:focus {
-  border-color: #0078D7;
-  box-shadow: 0 0 6px rgba(0, 120, 215, 0.5);
-}
+        /* Seções de Input e Botões */
+        .input-section,
+        .button-section {
+            flex: 1; 
+            display: flex;
+            flex-direction: column;
+        }
 
-.dialog-actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
+        /* Estilo dos campos de input com ícones */
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .input-wrapper .ph {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 20px;
+            transition: color 0.3s ease;
+        }
 
-.dialog-actions button {
-  flex: 1;
-  padding: 12px 0;
-  font-size: 16px;
-  font-weight: 600;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.25s ease;
-  margin: 0 5px;
-  user-select: none;
-}
+        .input-section label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
 
-.dialog-actions button:first-child {
-  background-color: #0078D7;
-  color: white;
-}
+        .input-section input[type="text"] {
+            padding: 14px 18px 14px 50px; /* Espaço para o ícone */
+            font-size: 16px;
+            border: 2px solid transparent;
+            background-color: var(--secondary-color);
+            border-radius: 12px;
+            outline: none;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+            color: var(--text-primary);
+        }
 
-.dialog-actions button:first-child:hover {
-  background-color: #005ea5;
-}
+        .input-section input[type="text"]:focus {
+            border-color: var(--primary-color);
+            background-color: var(--background-light);
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.2);
+        }
+        
+        .input-section input[type="text"]:focus + .ph {
+            color: var(--primary-color);
+        }
 
-.dialog-actions button:last-child {
-  background-color: #ddd;
-  color: #333;
-}
+        /* Contêiner e Estilo dos Botões */
+        .dialog-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 2 colunas */
+            gap: 15px;
+            width: 100%;
+        }
 
-.dialog-actions button:last-child:hover {
-  background-color: #bbb;
-}
+        .dialog-actions button {
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background-color: var(--secondary-color);
+            color: var(--text-primary);
+        }
+        
+        .dialog-actions button .ph {
+            font-size: 20px;
+        }
+
+        .dialog-actions button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            background-color: var(--tp-blue);
+            color: var(--background-light);
+        }
+
+        .dialog-actions button:active {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Botão de fechar com estilo de "perigo" */
+        .dialog-actions button.close {
+            grid-column: 1 / -1; /* Ocupa as duas colunas */
+            background-color: var(--danger-color);
+            color: white;
+            margin-top: 10px;
+        }
+        .dialog-actions button.close:hover {
+            background-color: var(--danger-hover);
+        }
