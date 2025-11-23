@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel Admin Multi-Dataset</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/style.css">
+    <script src="./assets/theme.js"></script>
+</head>
+
+<body>
+    <div id="loadingOverlay" class="hidden">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <div id="loadingMessage">Processando...</div>
+        </div>
+    </div>
+
+    <header class="app-header">
+        <div class="header-content">
+            <div class="logo-area">
+                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 256 256" fill="currentColor"
+                    class="text-primary">
+                    <rect width="256" height="256" fill="none" />
+                    <ellipse cx="128" cy="80" rx="88" ry="48" fill="none" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="16" />
+                    <path d="M40,80v48c0,26.51,39.4,48,88,48s88-21.49,88-48V80" fill="none" stroke="currentColor"
+                        stroke-linecap="round" stroke-linejoin="round" stroke-width="16" />
+                    <path d="M40,128v48c0,26.51,39.4,48,88,48s88-21.49,88-48V128" fill="none" stroke="currentColor"
+                        stroke-linecap="round" stroke-linejoin="round" stroke-width="16" />
+                </svg>
+
+                <h1 class="title">Painel Admin</h1>
+            </div>
+            <button id="theme-toggle" class="icon-btn" aria-label="Alternar Tema">
+            </button>
+        </div>
+    </header>
+
+    <main class="main-wrapper">
+
+        <section class="card fade-in" id="uploadBox">
+            <div class="card-header text-center">
+                <div class="icon-circle-lg">
+                    <svg width="40" height="40" viewBox="0 0 256 256" fill="var(--primary)">
+                        <path
+                            d="M213.7,82.3l-56-56A8.1,8.1,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8.1,8.1,0,0,0,213.7,82.3ZM160,51.3,188.7,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Zm-32-80a8,8,0,0,1-8,8H136v24a8,8,0,0,1-16,0V144H96a8,8,0,0,1,0-16h24V104a8,8,0,0,1,16,0v24h24A8,8,0,0,1,168,136Z">
+                        </path>
+                    </svg>
+                </div>
+                <h2>Painel Administrativo</h2>
+                <p class="subtitle">Gerencie Taxonomias, Políticas de Reembolso e Caminhos SAP em um só lugar.</p>
+            </div>
+
+            <div class="upload-area-large">
+                <label for="fileInput" class="custom-file-upload large">
+                    <span>Carregar Arquivo (JS / HTML)</span>
+                    <small>Arraste ou clique para selecionar</small>
+                </label>
+                <input id="fileInput" type="file" accept=".html,.js,text/html,text/javascript" />
+            </div>
+
+            <div class="docs-container">
+                <h3 class="docs-title">
+                    <svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor">
+                        <path
+                            d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,160H40V56H216V200ZM176,88a48,48,0,0,1-96,0,8,8,0,0,1,16,0,32,32,0,0,0,64,0,8,8,0,0,1,16,0Z">
+                        </path>
+                    </svg>
+                    Guia de Estruturas Suportadas
+                </h3>
+
+                <div class="docs-grid">
+
+                    <div class="doc-card">
+                        <div class="doc-header">
+                            <span class="badge blue">Taxonomia</span>
+                            <code>const dados = [...]</code>
+                        </div>
+                        <p>Estrutura padrão para categorização de chamados.</p>
+                        <pre class="code-block">
+{
+  "LOB": "MLCS",
+  "Product": "Cartão Presente",
+  "Topic": "Account Support",
+  "issueId": 156
+}</pre>
+                    </div>
+
+                    <div class="doc-card">
+                        <div class="doc-header">
+                            <span class="badge purple">Reembolsos</span>
+                            <code>const dadosRefaund = [...]</code>
+                        </div>
+                        <p>Políticas detalhadas com cenários e scripts.</p>
+                        <pre class="code-block">
+{
+  "request_type": "Assinatura",
+  "scenario": "Cliente deseja cancelar...",
+  "refund_criteria": "- Até 30 dias\n- 1ª cobrança"
+}</pre>
+                    </div>
+
+                    <div class="doc-card">
+                        <div class="doc-header">
+                            <span class="badge green">SAP</span>
+                            <code>const sapPathsData = [...]</code>
+                        </div>
+                        <p>Caminhos de navegação do sistema SAP.</p>
+                        <pre class="code-block">
+{
+  "issueId": 1,
+  "sapPath": "Microsoft 365 > Access"
+}</pre>
+                    </div>
+
+                    <div class="doc-card">
+                        <div class="doc-header">
+                            <span class="badge orange">Produtos</span>
+                            <code>const produtosMicrosoft</code>
+                        </div>
+                        <p>Lista de preços e tipos de licença.</p>
+                        <pre class="code-block">
+{
+  "nome": "Windows 11 Pro",
+  "preco": "R$ 1.599,00",
+  "tipo": "Licença"
+}</pre>
+
+                    </div>
+
+
+
+                </div>
+<div class="field-dictionary fade-in">
+                    <h4 class="dictionary-title">📖 Dicionário de Campos: Estrutura de Reembolsos</h4>
+                    <p class="dictionary-intro">Use este guia para entender o que preencher em cada campo do arquivo de reembolsos.</p>
+
+                    <div class="dictionary-grid">
+                        
+                        <div class="dict-item">
+                            <div class="dict-key">request_type</div>
+                            <div class="dict-desc">
+                                <strong>Nome do Cenário.</strong> É o título principal que aparecerá na lista. 
+                                <br><em>Ex: "Renovação de Assinatura"</em>
+                            </div>
+                        </div>
+
+                        <div class="dict-item">
+                            <div class="dict-key">usage_timing</div>
+                            <div class="dict-desc">
+                                <strong>Quando usar?</strong> Uma frase curta explicando o momento exato de aplicar esta regra.
+                                <br><em>Ex: "Usar apenas quando o cliente renovou ontem."</em>
+                            </div>
+                        </div>
+
+                        <div class="dict-item">
+                            <div class="dict-key">comment</div>
+                            <div class="dict-desc">
+                                <strong>Nota de Auditoria.</strong> O texto técnico (KBs, Códigos) que deve ser registrado no sistema para justificar a ação.
+                            </div>
+                        </div>
+
+                        <div class="dict-item">
+                            <div class="dict-key">scenario</div>
+                            <div class="dict-desc">
+                                <strong>História do Cliente.</strong> Descreva a situação. O que aconteceu com o cliente para ele pedir o reembolso?
+                            </div>
+                        </div>
+
+                        <div class="dict-item">
+                            <div class="dict-key">refund_criteria</div>
+                            <div class="dict-desc">
+                                <strong>Regras de Aprovação.</strong> Uma lista (checklist) das condições obrigatórias. Se o cliente não cumprir isso, não reembolse.
+                            </div>
+                        </div>
+
+                        <div class="dict-item">
+                            <div class="dict-key">advocate_procedure</div>
+                            <div class="dict-desc">
+                                <strong>Passo a Passo.</strong> O tutorial exato de quais botões clicar na ferramenta interna (MST/Orders) para realizar o processo.
+                            </div>
+                        </div>
+
+                        <div class="dict-item">
+                            <div class="dict-key">region / kb_id</div>
+                            <div class="dict-desc">
+                                <strong>Metadados.</strong> 
+                                <ul>
+                                    <li><strong>Region:</strong> Onde isso é válido (Ex: LATAM, Global).</li>
+                                    <li><strong>KB_ID:</strong> O número do artigo de suporte oficial.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="docs-footer">
+                    <p><strong>Nota:</strong> O arquivo deve conter as variáveis declaradas como <code>const</code>,
+                        <code>let</code> ou <code>var</code>.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="card fade-in hidden" id="editorBox">
+            <div class="card-header row-between">
+                <div class="dataset-selector-area">
+                    <label for="datasetSelect" class="subtitle" style="display:block; margin-bottom:4px;">Editando
+                        Tabela:</label>
+                    <select id="datasetSelect" class="custom-select"></select>
+                </div>
+                <div class="actions-group">
+                    <button id="btnAddRow" class="btn btn-primary">Novo</button>
+                    <button id="btnExport" class="btn btn-outline">Exportar Tudo</button>
+                </div>
+            </div>
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Busca global..." />
+            </div>
+            <div id="filtersContainer" class="filters-grid hidden"></div>
+            <div class="table-responsive" id="tableContainer"></div>
+            <div class="card-footer row-between">
+                <span id="filterStatus" class="subtitle"></span>
+            </div>
+        </section>
+
+        <div id="statusBox" class="status-bar hidden">
+            <span id="statusMsg">Pronto</span>
+        </div>
+
+    </main>
+
+
+
+    <dialog id="editModal" class="custom-dialog">
+        <div class="dialog-header">
+            <h3 id="modalTitle">Editar Registro</h3>
+            <button id="btnCloseModal" class="btn-close-icon">
+                <svg width="20" height="20" viewBox="0 0 256 256" fill="currentColor">
+                    <path
+                        d="M205.7,50.3l-32-32a8.1,8.1,0,0,0-11.4,0L128,52.7,93.7,18.3a8.1,8.1,0,0,0-11.4,0l-32,32a8.1,8.1,0,0,0,0,11.4L84.7,96,50.3,130.3a8.1,8.1,0,0,0,0,11.4l32,32a8.1,8.1,0,0,0,11.4,0L128,139.3l34.3,34.4a8.1,8.1,0,0,0,11.4,0l32-32a8.1,8.1,0,0,0,0-11.4L171.3,96l34.4-34.3A8.1,8.1,0,0,0,205.7,50.3Z">
+                    </path>
+                    <path
+                        d="M208.5,195.2a52.3,52.3,0,0,1-29.6,14.5l-34.7,4.9a60.4,60.4,0,0,1-67.5-67.5l4.9-34.7A52.1,52.1,0,0,1,96,82.8L84.7,71.4c-24.6,7.3-52.3,30.1-52.6,30.4a8,8,0,0,0,1.7,10.8L143.4,222.2a8,8,0,0,0,10.8,1.7c.3-.3,23.1-28,30.4-52.6Z">
+                    </path>
+                </svg>
+            </button>
+        </div>
+
+        <div class="dialog-body">
+            <form id="editForm"></form>
+        </div>
+
+        <div class="dialog-footer">
+            <button id="btnCancelModal" class="btn btn-outline">Cancelar</button>
+            <button id="btnSaveModal" class="btn btn-primary">Salvar Alterações</button>
+        </div>
+    </dialog>
+
+    <script src="./assets/toast.js"></script>
+    <script src="./assets/admin.js" defer></script>
+</body>
+
+</html>

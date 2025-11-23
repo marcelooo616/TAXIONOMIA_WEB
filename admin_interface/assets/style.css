@@ -1,0 +1,961 @@
+/* 1. VARIÁVEIS E TEMA */
+:root {
+    /* Cores Light */
+    --bg-body: #f3f4f6;
+    --bg-surface: #ffffff;
+    --bg-input: #f9fafb;
+    --text-primary: #111827;
+    --text-secondary: #6b7280;
+    --border-color: #e5e7eb;
+
+    /* Brand */
+    --primary: #6366f1;
+    /* Indigo moderno */
+    --primary-hover: #4f46e5;
+    --primary-light: #e0e7ff;
+
+    /* Feedback */
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --danger-hover: #dc2626;
+
+    /* UI */
+    --radius: 12px;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --font-main: 'Inter', sans-serif;
+}
+
+[data-theme="dark"] {
+    --bg-body: #0f172a;
+    --bg-surface: #1e293b;
+    --bg-input: #334155;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+    --primary: #818cf8;
+    --primary-hover: #6366f1;
+    --primary-light: #1e1b4b;
+    --shadow-sm: none;
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+/* 2. RESET & BASE */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    outline: none;
+}
+
+body {
+    background-color: var(--bg-body);
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    line-height: 1.5;
+    transition: background-color 0.3s, color 0.3s;
+    min-height: 100vh;
+}
+
+/* 3. LAYOUT & HEADER */
+.main-wrapper {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+    padding-bottom: 6rem;
+}
+
+.app-header {
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 1rem 0;
+    box-shadow: var(--shadow-sm);
+}
+
+.header-content {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-area i {
+    font-size: 1.5rem;
+    color: var(--primary);
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+/* 4. COMPONENTES: BOTÕES */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: var(--transition);
+    border: 1px solid transparent;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.btn-outline {
+    background: transparent;
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.btn-outline:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--bg-input);
+}
+
+.btn-danger {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid var(--border-color);
+}
+
+.btn-danger:hover {
+    background: var(--danger);
+    color: white;
+    border-color: var(--danger);
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--success);
+    border: 1px solid var(--border-color);
+
+
+}
+
+.btn-ghost:hover {
+    background: var(--success);
+    color: white;
+    border-color: var(--success);
+}
+
+.icon-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.icon-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* 5. CARDS & UPLOAD */
+.card {
+    background: var(--bg-surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    margin-bottom: 24px;
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-footer {
+    padding: 1rem 1.5rem;
+    background: var(--bg-input);
+    border-top: 1px solid var(--border-color);
+}
+
+.row-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.subtitle {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+/* Custom Upload */
+.upload-area {
+    padding: 3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.custom-file-upload {
+    border: 2px dashed var(--border-color);
+    display: inline-block;
+    padding: 2rem 4rem;
+    cursor: pointer;
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    font-weight: 500;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.custom-file-upload:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-light);
+}
+
+.custom-file-upload i {
+    font-size: 2rem;
+}
+
+/* 6. TABELA & INPUTS */
+.search-bar {
+    padding: 1rem 1.5rem;
+    position: relative;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.search-icon {
+    position: absolute;
+    left: 2.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 10px 10px 10px 40px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    transition: var(--transition);
+}
+
+.search-bar input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.table-responsive {
+    overflow-x: auto;
+    max-height: 60vh;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
+th {
+    background: var(--bg-input);
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-secondary);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 1px solid var(--border-color);
+}
+
+td {
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+tr:hover td {
+    background: var(--bg-input);
+}
+
+.data-input {
+    width: 100%;
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 6px;
+    border-radius: 4px;
+    color: var(--text-primary);
+    transition: var(--transition);
+}
+
+.data-input:focus {
+    background: var(--bg-surface);
+    border-color: var(--primary);
+}
+
+/* Textarea raw */
+#rawJson {
+    width: 100%;
+    min-height: 200px;
+    padding: 1rem;
+    background: var(--bg-input);
+    border: none;
+    color: var(--text-primary);
+    font-family: monospace;
+}
+
+/* 7. TOAST NOTIFICATIONS */
+#toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    padding: 16px 20px;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 300px;
+    border-left: 4px solid var(--primary);
+    animation: slideIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.toast.success {
+    border-color: var(--success);
+}
+
+.toast.error {
+    border-color: var(--danger);
+}
+
+.toast.warning {
+    border-color: var(--warning);
+}
+
+.toast-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.toast-msg {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+/* 8. LOADING */
+#loadingOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-content {
+    background: var(--bg-surface);
+    padding: 30px;
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    box-shadow: var(--shadow-md);
+    font-weight: 600;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* UTILITÁRIOS */
+.hidden {
+    display: none !important;
+}
+
+.text-primary {
+    color: var(--primary);
+}
+
+.text-danger {
+    color: var(--danger);
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* ... (Mantenha o resto do seu CSS anterior) ... */
+
+/* Estilos do Seletor de Dataset */
+.dataset-selector-area {
+    min-width: 250px;
+}
+
+.custom-select {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-input);
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+    transition: var(--transition);
+}
+
+.custom-select:hover,
+.custom-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+/* Ajustes na tabela para textos grandes (Refunds) */
+td textarea.data-input {
+    resize: vertical;
+    font-family: inherit;
+    line-height: 1.4;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Ajuste no botão dentro da tabela */
+.actions-cell .btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+}
+
+.actions-cell .btn span {
+    display: none;
+    /* Em telas pequenas esconde o texto, mostra só ícone */
+}
+
+@media (min-width: 1024px) {
+    .actions-cell .btn span {
+        display: inline;
+    }
+}
+
+/* ... (resto do CSS) ... */
+
+/* ESTILOS DO DIALOG (MODAL) */
+dialog.custom-dialog {
+    border: none;
+    border-radius: var(--radius);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 800px;
+    /* Largo o suficiente para editar textos */
+    max-height: 90vh;
+    padding: 0;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: zoomIn 0.2s ease-out;
+}
+
+dialog::backdrop {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(3px);
+}
+
+.dialog-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-input);
+}
+
+.dialog-body {
+    padding: 2rem;
+    overflow-y: auto;
+    max-height: calc(90vh - 140px);
+}
+
+.dialog-footer {
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    background: var(--bg-surface);
+}
+
+/* Estilos do Form dentro do Modal */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    font-family: inherit;
+    transition: var(--transition);
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+textarea.form-control {
+    min-height: 120px;
+    /* Altura boa para textos longos */
+    line-height: 1.6;
+    resize: vertical;
+}
+
+.btn-close-icon {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+.btn-close-icon:hover {
+    color: var(--danger);
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -48%) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* --- ESTILOS DA LIST VIEW (Dataset Refund) --- */
+
+/* O container que segura os cards */
+.list-view-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Espaço entre um card e outro */
+    padding: 10px 4px; /* Espaço nas bordas (Cima/Baixo, Esquerda/Direita) */
+}
+
+/* O Card individual */
+.list-card {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--primary); /* A tarja colorida */
+    border-radius: 8px;
+    padding: 12px 16px; /* Reduzi o padding interno para ficar menos "gordo" */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02); /* Sombra bem leve */
+}
+
+.list-card:hover {
+    transform: translateY(-2px); /* Sobe um pouquinho ao passar o mouse */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08); /* Sombra aumenta */
+    border-color: var(--primary-light);
+}
+
+/* Título e Subtítulo dentro do card */
+.list-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-grow: 1; /* Ocupa o espaço disponível */
+    margin-right: 16px; /* Afasta dos botões */
+    overflow: hidden; /* Garante que texto não vaze */
+}
+
+.list-card-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+.list-card-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Três pontinhos (...) se for muito longo */
+    max-width: 100%;
+}
+
+/* --- ESTILOS DOS FILTROS POR COLUNA --- */
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); /* Responsivo */
+    gap: 12px;
+    padding: 16px 24px;
+    background-color: var(--bg-input);
+    border-bottom: 1px solid var(--border-color);
+    animation: fadeIn 0.3s ease;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.filter-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.filter-select {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-select:hover, .filter-select:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+/* Utilitário para esconder */
+.hidden { display: none !important; }
+
+/* --- ESTILOS DA TELA INICIAL (DOCS) --- */
+
+.text-center { text-align: center; }
+
+.icon-circle-lg {
+    width: 80px; height: 80px;
+    background: var(--primary-light); /* Fundo suave */
+    border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    margin: 0 auto 1.5rem auto;
+}
+
+.upload-area-large {
+    margin: 2rem 0 3rem 0;
+    display: flex; justify-content: center;
+}
+
+.custom-file-upload.large {
+    width: 100%; max-width: 400px;
+    text-align: center;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 1rem;
+}
+.custom-file-upload.large:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+}
+.custom-file-upload.large small {
+    display: block; font-weight: 400; opacity: 0.8; margin-top: 4px;
+}
+
+/* Container da Documentação */
+.docs-container {
+    background: var(--bg-input);
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+}
+
+.docs-title {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+}
+
+.docs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+}
+
+.doc-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.2rem;
+    transition: transform 0.2s;
+}
+
+.doc-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--primary);
+}
+
+.doc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* Badges Coloridos */
+.badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 12px;
+    text-transform: uppercase;
+}
+.badge.blue { background: #dbeafe; color: #1e40af; }
+.badge.purple { background: #f3e8ff; color: #6b21a8; }
+.badge.green { background: #dcfce7; color: #166534; }
+.badge.orange { background: #ffedd5; color: #9a3412; }
+
+[data-theme="dark"] .badge.blue { background: #1e3a8a; color: #bfdbfe; }
+[data-theme="dark"] .badge.purple { background: #581c87; color: #e9d5ff; }
+[data-theme="dark"] .badge.green { background: #14532d; color: #bbf7d0; }
+[data-theme="dark"] .badge.orange { background: #7c2d12; color: #fed7aa; }
+
+.doc-card code {
+    font-family: monospace;
+    font-size: 0.85rem;
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.doc-card p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+/* Bloco de Código Fake */
+.code-block {
+    background: #1e1e1e; /* Sempre escuro para parecer código */
+    color: #d4d4d4;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Monaco', monospace;
+    border: 1px solid #333;
+}
+
+.docs-footer {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+}
+
+/* Ajuste para mobile */
+@media (max-width: 768px) {
+    .docs-grid { grid-template-columns: 1fr; }
+    .upload-area-large { flex-direction: column; }
+}
+
+/* --- ESTILOS DO DICIONÁRIO DE CAMPOS --- */
+
+.field-dictionary {
+    margin-top: 3rem;
+    border-top: 1px dashed var(--border-color);
+    padding-top: 2rem;
+}
+
+.dictionary-title {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    display: flex; align-items: center; gap: 8px;
+}
+
+.dictionary-intro {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+.dictionary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.dict-item {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.dict-key {
+    background-color: var(--bg-input);
+    color: var(--primary);
+    font-family: monospace;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dict-desc {
+    padding: 12px 14px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.dict-desc strong {
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.dict-desc em {
+    color: var(--text-secondary);
+    font-style: italic;
+    opacity: 0.8;
+    font-size: 0.8rem;
+}
+
+.dict-desc ul {
+    margin: 0; padding-left: 1.2rem; margin-top: 4px;
+}
