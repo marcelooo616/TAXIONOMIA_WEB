@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel Admin Pro</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/style.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body>
+    <div id="toast-container"></div>
+
+    <div id="loadingOverlay" class="hidden">
+        <div class="spinner"></div>
+        <div id="loadingMessage">Processando...</div>
+    </div>
+
+    <div id="mobileOverlay" class="mobile-overlay"></div>
+
+    <div class="app-container">
+        
+        <aside class="app-sidebar" id="appSidebar">
+            <div class="sidebar-header">
+                <i class="ph ph-squares-four" style="font-size: 1.5rem; color: var(--primary);"></i>
+                <span>Admin Panel</span>
+                <button id="closeSidebarBtn" class="icon-btn" style="margin-left: auto; display: none;">
+                    <i class="ph ph-x"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav" id="sidebarNav">
+                <div style="padding: 10px; color: var(--text-muted); font-size: 0.85rem;">
+                    Aguardando upload...
+                </div>
+            </nav>
+
+            <div class="sidebar-footer" style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border);">
+                <button id="theme-toggle" class="nav-item" style="width: 100%;">
+                    <i class="ph ph-moon"></i> <span>Tema Escuro</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="app-content">
+            
+            <header class="mobile-header">
+                <button id="openSidebarBtn" class="icon-btn">
+                    <i class="ph ph-list" style="font-size: 1.5rem;"></i>
+                </button>
+                <span style="font-weight: 700;">Admin Panel</span>
+                <div style="width: 32px;"></div> </header>
+
+            <div id="view-upload" class="view-section active" style="height: 100%;">
+                <div class="upload-container">
+                    <div class="upload-box">
+                        <div style="background: #e0e7ff; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
+                            <i class="ph ph-file-html" style="font-size: 40px; color: var(--primary);"></i>
+                        </div>
+                        <h2>Carregar Sistema</h2>
+                        <p style="margin-bottom: 2rem;">Selecione o arquivo HTML ou JS original para iniciar a edição dos dados.</p>
+                        
+                        <label for="fileInput" class="btn btn-primary" style="justify-content: center;">
+                            Selecionar Arquivo Local
+                        </label>
+                        <input id="fileInput" type="file" accept=".html,.htm,.js,.txt" />
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-table" class="view-section hidden" style="height: 100%; padding: 1.5rem; overflow: hidden;">
+                <div class="card fade-in">
+                    <div class="card-header row-between">
+                        <div class="header-title">
+                            <i id="tableIcon" class="ph ph-table"></i>
+                            <h2 id="tableTitle" style="font-size: 1.1rem;">Dados</h2>
+                        </div>
+                        <div class="actions-group gap-2">
+                            <button id="btnAddRow" class="btn btn-primary"><i class="ph ph-plus"></i> <span class="hide-mobile">Novo</span></button>
+                            <button id="btnExport" class="btn btn-outline"><i class="ph ph-download-simple"></i> <span class="hide-mobile">Salvar</span></button>
+                        </div>
+                    </div>
+                    
+                    <div class="toolbar" style="padding: 1rem; border-bottom: 1px solid var(--border); background: var(--bg-body);">
+                        <div class="search-wrapper" style="flex: 1; position: relative;">
+                            <i class="ph ph-magnifying-glass" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                            <input type="text" id="searchInput" placeholder="Pesquisar registros..." style="padding-left: 36px;">
+                        </div>
+                        <span id="recordCount" class="badge" style="font-size: 0.8rem; background: var(--bg-card); padding: 4px 8px; border: 1px solid var(--border); border-radius: 4px;">0</span>
+                    </div>
+
+                    <div id="filtersContainer" class="filters-grid hidden" style="padding: 1rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; border-bottom: 1px solid var(--border);"></div>
+                    
+                    <div class="table-responsive" id="tableContainer"></div>
+                </div>
+            </div>
+
+            <div id="view-emails" class="view-section hidden" style="height: 100%; padding: 1.5rem; overflow: hidden;">
+                <div class="email-layout" style="height: 100%; display: flex; gap: 15px;">
+                     <div class="email-sidebar-list card" style="width: 280px;">
+                        <div class="list-header" style="padding: 1rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between;">
+                            <h3>Templates</h3>
+                            <button id="btnNewEmail" class="icon-btn"><i class="ph ph-plus"></i></button>
+                        </div>
+                        <div id="emailListContainer" class="email-list-scroll" style="overflow-y: auto; flex: 1;"></div>
+                    </div>
+                    <div class="email-editor-area card" style="flex: 1;">
+                        <div class="editor-header" style="padding: 1rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between;">
+                            <input type="text" id="emailName" placeholder="Nome do Modelo" style="border: none; font-size: 1.2rem; font-weight: bold; background: transparent; padding: 0;">
+                            <div style="display: flex; gap: 8px;">
+                                <button id="btnViewSource" class="btn btn-ghost">HTML</button>
+                                <button id="btnSaveEmail" class="btn btn-primary">Salvar</button>
+                                <button id="btnExportEmail" class="btn btn-outline">Baixar</button>
+                            </div>
+                        </div>
+                        <div class="editor-meta" style="padding: 10px 1rem; border-bottom: 1px solid var(--border); display: flex; gap: 10px; align-items: center;">
+                             <label>Assunto:</label>
+                             <input type="text" id="emailSubject" style="flex: 1;">
+                        </div>
+                        <div class="rich-toolbar" style="padding: 8px; border-bottom: 1px solid var(--border); display: flex; gap: 5px;">
+                            <button class="tool-btn icon-btn" data-cmd="bold"><i class="ph ph-text-b"></i></button>
+                            <button class="tool-btn icon-btn" data-cmd="italic"><i class="ph ph-text-italic"></i></button>
+                            <button class="tool-btn icon-btn" data-cmd="underline"><i class="ph ph-text-underline"></i></button>
+                            <div style="width: 1px; background: var(--border); margin: 0 5px;"></div>
+                            <select id="varSelect" style="width: auto;"><option value="">Variável</option><option value="${cliente}">Cliente</option></select>
+                            <input type="color" id="colorPicker" style="height: 35px; width: 40px; padding: 0; border: none; background: none;">
+                        </div>
+
+                        <div id="visualEditor" class="visual-editor" contenteditable="true" style="flex: 1; padding: 20px; overflow-y: auto;"></div>
+                        <textarea id="codeEditor" class="code-editor hidden" style="flex: 1; padding: 20px; font-family: monospace; resize: none; border: none;"></textarea>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <dialog id="editModal" class="custom-dialog" style="border: none; border-radius: 12px; padding: 0; min-width: 400px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+        <div class="dialog-header" style="padding: 1.2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between;">
+            <h3 id="modalTitle" style="margin: 0;">Editar</h3>
+            <button id="btnCloseModal" class="icon-btn"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="dialog-body" style="padding: 1.5rem; max-height: 60vh; overflow-y: auto;">
+            <form id="editForm"></form>
+        </div>
+        <div class="dialog-footer" style="padding: 1.2rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; background: var(--bg-body);">
+            <button id="btnCancelModal" class="btn btn-ghost">Cancelar</button>
+            <button id="btnSaveModal" class="btn btn-primary">Salvar Alterações</button>
+        </div>
+    </dialog>
+
+    <script src="./assets/theme.js"></script>
+       <script src="./assets/js/core.js"></script>
+    <script src="./assets/js/parser.js"></script>
+    <script src="./assets/js/table.js"></script>
+    <script src="./assets/js/email.js"></script>
+    <script src="./assets/js/main.js"></script>
+</body>
+</html>
