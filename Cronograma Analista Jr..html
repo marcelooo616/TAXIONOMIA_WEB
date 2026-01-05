@@ -1,0 +1,389 @@
+ <!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plano de Guerra - Mauá/SP (IBAM)</title>
+    <style>
+        :root {
+            --primary: #007bff;
+            --success: #28a745;
+            --bg: #f4f6f9;
+            --card-bg: #ffffff;
+            --text: #333;
+            --border: #ddd;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        h1 { margin: 0; color: var(--primary); }
+        p.subtitle { color: #666; margin-top: 5px; }
+
+        /* Barra de Progresso */
+        .progress-container {
+            width: 100%;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            margin-top: 15px;
+            height: 25px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--success);
+            width: 0%;
+            text-align: center;
+            line-height: 25px;
+            color: white;
+            font-weight: bold;
+            transition: width 0.5s ease;
+        }
+
+        /* Abas */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: #ccc;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Conteúdo dos Dias */
+        .month-section { display: none; }
+        .month-section.active { display: block; }
+
+        .week-block {
+            background: var(--card-bg);
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .week-title {
+            margin-top: 0;
+            color: #444;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .day-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+        }
+
+        .day-item:last-child { border-bottom: none; }
+        .day-item:hover { background-color: #f8f9fa; }
+
+        .day-check {
+            transform: scale(1.5);
+            margin-right: 15px;
+            cursor: pointer;
+        }
+
+        .day-content { flex-grow: 1; }
+        
+        .day-label {
+            font-weight: bold;
+            color: var(--primary);
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+        }
+
+        .day-topic { font-weight: bold; display: block; }
+        .day-meta { color: #666; font-size: 0.9rem; }
+
+        /* Estado Concluído */
+        .day-item.completed {
+            background-color: #e8f5e9;
+            opacity: 0.8;
+        }
+        .day-item.completed .day-topic {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .actions {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Cronograma Analista Jr. - Mauá</h1>
+        <p class="subtitle">Estratégia IBAM (Foco 80/20)</p>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar">0%</div>
+        </div>
+        <p id="progressText" style="text-align: center; font-size: 0.9rem; margin-top: 5px;">0 de 56 dias concluídos</p>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab(1)">Mês 1 (Base)</button>
+        <button class="tab-btn" onclick="switchTab(2)">Mês 2 (Aprofundamento)</button>
+    </div>
+
+    <div id="month1" class="month-section active"></div>
+    <div id="month2" class="month-section"></div>
+
+    <div class="actions">
+        <button class="btn-danger" onclick="resetProgress()">Resetar Todo o Progresso</button>
+    </div>
+</div>
+
+<script>
+    // DADOS DO PLANO (O SEGUNDO PLANO - ESTRATÉGIA PARETO)
+    const planData = {
+        month1: [
+            {
+                week: "Semana 1: O Núcleo Técnico e Lógico",
+                days: [
+                    { day: "Segunda", disc: "Específica", topic: "SQL (DML): SELECT, INSERT, UPDATE, DELETE", meta: "20 Questões" },
+                    { day: "Terça", disc: "Português", topic: "Ortografia e Acentuação (Novo Acordo)", meta: "20 Questões" },
+                    { day: "Quarta", disc: "Específica", topic: "SQL (JOINs): Inner, Left e Right", meta: "20 Questões (Foco JOIN)" },
+                    { day: "Quinta", disc: "Matemática", topic: "Raciocínio Lógico: Tabela-Verdade", meta: "15 Questões" },
+                    { day: "Sexta", disc: "Específica", topic: "Java (OO): Herança e Polimorfismo", meta: "20 Questões" },
+                    { day: "Sábado", disc: "REVISÃO", topic: "Mini Simulado (Tópicos da semana)", meta: "30 Questões Mistas" },
+                    { day: "Domingo", disc: "Descanso", topic: "Descanso ou Vídeo leve", meta: "-" }
+                ]
+            },
+            {
+                week: "Semana 2: Modelagem Visual e Estrutura",
+                days: [
+                    { day: "Segunda", disc: "Específica", topic: "UML (Classes): Agregação e Composição", meta: "20 Questões" },
+                    { day: "Terça", disc: "Português", topic: "Crase: Regra geral e casos proibidos", meta: "25 Questões" },
+                    { day: "Quarta", disc: "Específica", topic: "UML (Comportamento): Casos de Uso e Sequência", meta: "20 Questões" },
+                    { day: "Quinta", disc: "Matemática", topic: "Conjuntos e Funções do 1º Grau", meta: "15 Questões" },
+                    { day: "Sexta", disc: "Específica", topic: "Banco de Dados: Normalização (1FN, 2FN, 3FN)", meta: "20 Questões" },
+                    { day: "Sábado", disc: "SIMULADO", topic: "Prova Antiga IBAM (Específica)", meta: "Prova Completa" },
+                    { day: "Domingo", disc: "Correção", topic: "Análise de erros", meta: "-" }
+                ]
+            },
+            {
+                week: "Semana 3: Matemática Financeira e Web",
+                days: [
+                    { day: "Segunda", disc: "Matemática", topic: "Juros Simples e Compostos", meta: "20 Questões" },
+                    { day: "Terça", disc: "Específica", topic: "Eng. Software: Ciclo de Vida (Cascata/Espiral)", meta: "20 Questões" },
+                    { day: "Quarta", disc: "Português", topic: "Pontuação (Vírgula)", meta: "20 Questões" },
+                    { day: "Quinta", disc: "Específica", topic: "Web: HTML/CSS/JS (Sintaxe de prova)", meta: "20 Questões" },
+                    { day: "Sexta", disc: "Específica", topic: "J2EE e Padrões de Projeto", meta: "15 Questões Difíceis" },
+                    { day: "Sábado", disc: "REVISÃO", topic: "Fórmulas Finan. + Regras Crase", meta: "30 Questões" },
+                    { day: "Domingo", disc: "Descanso", topic: "Descanso", meta: "-" }
+                ]
+            },
+            {
+                week: "Semana 4: Gestão e Consolidação",
+                days: [
+                    { day: "Segunda", disc: "Específica", topic: "PMBOK: Áreas de Conhecimento", meta: "20 Questões (Decoreba)" },
+                    { day: "Terça", disc: "Português", topic: "Concordância Verbal e Nominal", meta: "20 Questões" },
+                    { day: "Quarta", disc: "Específica", topic: "Ágil: Scrum e Kanban", meta: "20 Questões" },
+                    { day: "Quinta", disc: "Matemática", topic: "Análise Combinatória", meta: "15 Questões" },
+                    { day: "Sexta", disc: "Específica", topic: "Segurança: ACID, Backup, Malware", meta: "20 Questões" },
+                    { day: "Sábado", disc: "SIMULADO", topic: "Simulado GERAL 1 (IBAM)", meta: "40-50 Questões (Cronometrado)" },
+                    { day: "Domingo", disc: "Correção", topic: "Identificar pontos fracos", meta: "-" }
+                ]
+            }
+        ],
+        month2: [
+             {
+                week: "Semana 5: O Legado e Regência",
+                days: [
+                    { day: "Segunda", disc: "Específica", topic: "Leitura de Código: Delphi e PHP", meta: "15 Questões (Não codar)" },
+                    { day: "Terça", disc: "Português", topic: "Regência Verbal e Nominal", meta: "20 Questões" },
+                    { day: "Quarta", disc: "Específica", topic: "BI & Data Warehouse", meta: "20 Questões" },
+                    { day: "Quinta", disc: "Matemática", topic: "Probabilidade", meta: "15 Questões" },
+                    { day: "Sexta", disc: "Específica", topic: "SGBDs: Oracle vs SQL Server vs Postgres", meta: "15 Questões Teóricas" },
+                    { day: "Sábado", disc: "REVISÃO", topic: "Foco nos erros do Simulado anterior", meta: "Revisão Direcionada" },
+                    { day: "Domingo", disc: "Descanso", topic: "Descanso", meta: "-" }
+                ]
+            },
+            {
+                week: "Semana 6: O Toque de Matemática Avançada",
+                days: [
+                    { day: "Segunda", disc: "Matemática", topic: "Funções e Limites (Básico)", meta: "10 Questões Fáceis" },
+                    { day: "Terça", disc: "Específica", topic: "Eng. Requisitos: Funcionais vs Não Funcionais", meta: "20 Questões" },
+                    { day: "Quarta", disc: "Português", topic: "Sintaxe: Orações Coordenadas/Subordinadas", meta: "20 Questões" },
+                    { day: "Quinta", disc: "Matemática", topic: "Derivadas: Regra do Tombo", meta: "10 Questões Básicas" },
+                    { day: "Sexta", disc: "Específica", topic: "Transações, Views e Procedures", meta: "15 Questões" },
+                    { day: "Sábado", disc: "SIMULADO", topic: "Simulado GERAL 2 (IBAM)", meta: "Simulação Real" },
+                    { day: "Domingo", disc: "Correção", topic: "Análise Fria", meta: "-" }
+                ]
+            },
+            {
+                week: "Semana 7: Revisão Turbo",
+                days: [
+                    { day: "Segunda", disc: "Misto", topic: "Intensivão SQL + Java (Difíceis)", meta: "25 Questões" },
+                    { day: "Terça", disc: "Misto", topic: "Intensivão Português (Crase/Pontuação)", meta: "30 Questões" },
+                    { day: "Quarta", disc: "Misto", topic: "Intensivão UML + Eng. Software", meta: "25 Questões" },
+                    { day: "Quinta", disc: "Misto", topic: "Intensivão Matemática (Juros/Lógica)", meta: "20 Questões" },
+                    { day: "Sexta", disc: "Leitura", topic: "Resumos: PMBOK e Padrões", meta: "Sem questões" },
+                    { day: "Sábado", disc: "SIMULADO", topic: "Simulado FINAL (IBAM + Vunesp)", meta: "50 Questões" },
+                    { day: "Domingo", disc: "Descanso", topic: "Descanso", meta: "-" }
+                ]
+            },
+            {
+                week: "Semana 8: Reta Final",
+                days: [
+                    { day: "Segunda", disc: "Português", topic: "Revisão de Decorebas (Hífen/Conjunções)", meta: "Leve" },
+                    { day: "Terça", disc: "Específica", topic: "Revisão Visual (UML e SQL)", meta: "Leve" },
+                    { day: "Quarta", disc: "Matemática", topic: "Revisão de Fórmulas", meta: "Leve" },
+                    { day: "Quinta", disc: "Geral", topic: "Refazer as 10 questões que mais errou", meta: "Correção de falhas" },
+                    { day: "Sexta", disc: "Descanso", topic: "Vídeo de Dicas Finais IBAM", meta: "Relaxamento" },
+                    { day: "Sábado", disc: "ZERO ESTUDO", topic: "Preparar Documentos e Local", meta: "-" },
+                    { day: "Domingo", disc: "A PROVA", topic: "Boa sorte!", meta: "APROVAÇÃO" }
+                ]
+            }
+        ]
+    };
+
+    // Estado da Aplicação
+    let progressState = JSON.parse(localStorage.getItem('mauaStudyProgress')) || {};
+
+    function renderWeeks(monthKey, containerId) {
+        const container = document.getElementById(containerId);
+        let html = '';
+        let dayGlobalIndex = monthKey === 'month1' ? 0 : 28; // Offset para IDs únicos
+
+        planData[monthKey].forEach((week, wIndex) => {
+            html += `<div class="week-block">
+                        <h3 class="week-title">${week.week}</h3>
+                        <div>`;
+            
+            week.days.forEach((day, dIndex) => {
+                const uniqueId = `${monthKey}_w${wIndex}_d${dIndex}`;
+                const isChecked = progressState[uniqueId] ? 'checked' : '';
+                const completedClass = progressState[uniqueId] ? 'completed' : '';
+
+                html += `
+                    <div class="day-item ${completedClass}" id="row_${uniqueId}">
+                        <input type="checkbox" class="day-check" id="${uniqueId}" 
+                               onchange="toggleDay('${uniqueId}')" ${isChecked}>
+                        <div class="day-content">
+                            <span class="day-label">${day.day} - ${day.disc}</span>
+                            <span class="day-topic">${day.topic}</span>
+                            <span class="day-meta">Meta: ${day.meta}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+        });
+
+        container.innerHTML = html;
+    }
+
+    function toggleDay(id) {
+        const checkbox = document.getElementById(id);
+        const row = document.getElementById(`row_${id}`);
+        
+        if (checkbox.checked) {
+            progressState[id] = true;
+            row.classList.add('completed');
+        } else {
+            delete progressState[id];
+            row.classList.remove('completed');
+        }
+
+        // Salvar no LocalStorage
+        localStorage.setItem('mauaStudyProgress', JSON.stringify(progressState));
+        updateProgressBar();
+    }
+
+    function updateProgressBar() {
+        const totalDays = 56; // 8 semanas * 7 dias
+        const completedDays = Object.keys(progressState).length;
+        const percentage = Math.round((completedDays / totalDays) * 100);
+
+        const bar = document.getElementById('progressBar');
+        const text = document.getElementById('progressText');
+
+        bar.style.width = `${percentage}%`;
+        bar.innerText = `${percentage}%`;
+        text.innerText = `${completedDays} de ${totalDays} dias concluídos`;
+
+        // Mudar cor se completou
+        if(percentage === 100) {
+            bar.style.backgroundColor = '#28a745';
+            bar.innerText = "PARABÉNS! PRONTO PARA A PROVA!";
+        }
+    }
+
+    function switchTab(tabNum) {
+        document.querySelectorAll('.month-section').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+        document.getElementById(`month${tabNum}`).classList.add('active');
+        document.querySelectorAll('.tab-btn')[tabNum-1].classList.add('active');
+    }
+
+    function resetProgress() {
+        if(confirm("Tem certeza? Isso apagará todo o seu progresso salvo.")) {
+            localStorage.removeItem('mauaStudyProgress');
+            progressState = {};
+            location.reload();
+        }
+    }
+
+    // Inicialização
+    renderWeeks('month1', 'month1');
+    renderWeeks('month2', 'month2');
+    updateProgressBar();
+
+</script>
+
+</body>
+</html>
