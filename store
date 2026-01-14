@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MS Store Advocate Dashboard</title>
+    <style>
+        :root {
+            /* Paleta Microsoft Modern */
+            --primary: #0078d4;
+            --primary-hover: #106ebe;
+            --bg-app: #f0f2f5;
+            --bg-panel: #ffffff;
+            --text-primary: #323130;
+            --text-secondary: #605e5c;
+            --border-color: #e1dfdd;
+            --success: #107c10;
+            --warning-bg: #fff4ce;
+            --warning-text: #3b3a39;
+            --card-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            --card-hover: 0 8px 16px rgba(0,0,0,0.12);
+            --radius: 8px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', 'Segoe UI Web (West European)', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background-color: var(--bg-app);
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR (CONTROLES) --- */
+        aside {
+            width: 300px;
+            background-color: var(--bg-panel);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            z-index: 20;
+            box-shadow: 4px 0 12px rgba(0,0,0,0.05);
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary), #005a9e);
+            color: white;
+        }
+
+        .sidebar-header h2 { margin: 0; font-size: 1.2rem; font-weight: 600; }
+        .sidebar-header p { margin: 5px 0 0 0; font-size: 0.8rem; opacity: 0.9; }
+
+        .sidebar-content {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .input-group { margin-bottom: 16px; }
+        .input-group label {
+            display: block; font-size: 0.75rem; font-weight: 700;
+            color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .input-group input {
+            width: 100%; padding: 10px; border: 1px solid var(--border-color);
+            border-radius: var(--radius); font-size: 0.9rem; transition: border 0.2s;
+        }
+        .input-group input:focus {
+            outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(0,120,212,0.2);
+        }
+
+        .reset-btn {
+            background-color: transparent; border: 1px solid #d13438; color: #d13438;
+            padding: 8px; width: 100%; border-radius: var(--radius); cursor: pointer;
+            font-weight: 600; transition: all 0.2s; margin-top: 10px;
+        }
+        .reset-btn:hover { background-color: #d13438; color: white; }
+
+        /* --- MAIN AREA --- */
+        main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+
+        /* --- TABS NAVIGATION --- */
+        .tabs-container {
+            background-color: var(--bg-panel);
+            padding: 0 30px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+        }
+
+        .tabs { display: flex; gap: 20px; height: 100%; }
+        
+        .tab-btn {
+            background: none; border: none; height: 100%;
+            font-size: 0.95rem; font-weight: 600; color: var(--text-secondary);
+            cursor: pointer; position: relative; padding: 0 5px;
+            transition: color 0.2s;
+        }
+        .tab-btn:hover { color: var(--primary); }
+        .tab-btn.active { color: var(--primary); }
+        .tab-btn.active::after {
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+            height: 3px; background-color: var(--primary); border-radius: 3px 3px 0 0;
+        }
+
+        .search-container { position: relative; width: 300px; }
+        .search-container input {
+            width: 100%; padding: 8px 12px 8px 35px; border-radius: 20px;
+            border: 1px solid var(--border-color); background-color: var(--bg-app);
+        }
+        .search-icon {
+            position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+            color: var(--text-secondary); font-size: 0.9rem;
+        }
+
+        /* --- CONTENT AREA --- */
+        .content-area {
+            flex: 1; padding: 30px; overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- CARDS (SCRIPTS) --- */
+        .section-title {
+            color: var(--primary); font-size: 1.1rem; border-left: 4px solid var(--primary);
+            padding-left: 12px; margin: 30px 0 15px 0; font-weight: 700; display: flex; align-items: center;
+        }
+
+        .script-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px;
+        }
+
+        .card {
+            background-color: var(--bg-panel); border-radius: var(--radius);
+            padding: 20px; border: 1px solid var(--border-color);
+            box-shadow: var(--card-shadow); transition: all 0.2s ease;
+            position: relative; display: flex; flex-direction: column;
+        }
+
+        .card:hover { transform: translateY(-3px); box-shadow: var(--card-hover); border-color: var(--primary); }
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;
+        }
+
+        .card h3 { margin: 0; font-size: 1rem; color: var(--text-primary); font-weight: 600; }
+        
+        .copy-btn {
+            background-color: rgba(0, 120, 212, 0.1); color: var(--primary);
+            border: none; padding: 6px 12px; border-radius: 4px;
+            font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s;
+        }
+        .copy-btn:hover { background-color: var(--primary); color: white; }
+
+        .card-text {
+            background-color: #f9f9f9; padding: 12px; border-radius: 6px;
+            font-family: 'Consolas', monospace; font-size: 0.85rem; color: #444;
+            line-height: 1.5; white-space: pre-wrap; flex: 1; border: 1px dashed #ccc;
+        }
+
+        /* --- DOCS STYLING --- */
+        .doc-block {
+            background: white; padding: 30px; border-radius: var(--radius);
+            box-shadow: var(--card-shadow); margin-bottom: 25px; border: 1px solid var(--border-color);
+        }
+
+        .doc-block h2 { color: var(--primary); border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; margin-top: 0; }
+        .doc-block h3 { color: #323130; margin-top: 25px; margin-bottom: 10px; }
+        .doc-block ul { padding-left: 20px; color: #555; }
+        .doc-block li { margin-bottom: 8px; line-height: 1.6; }
+        .doc-block p { line-height: 1.6; color: #444; }
+
+        .alert-box {
+            background-color: var(--warning-bg); color: var(--warning-text);
+            padding: 15px; border-left: 4px solid #ffd700; border-radius: 4px; margin: 15px 0;
+        }
+
+        .kb-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px;
+        }
+        .kb-item {
+            background: #f8f9fa; padding: 10px; border-radius: 4px; border: 1px solid #eee;
+            font-size: 0.85rem; display: flex; flex-direction: column;
+        }
+        .kb-code { font-weight: bold; color: var(--primary); margin-bottom: 4px; }
+
+        .flow-step {
+            border-left: 3px solid #ccc; padding-left: 15px; margin-bottom: 15px;
+        }
+
+        /* Highlight Variables */
+        .var { color: #d13438; background: #fff0f1; padding: 0 4px; border-radius: 3px; font-weight: 600; }
+
+        /* Toast Notification */
+        #toast {
+            visibility: hidden; min-width: 250px; background-color: #333; color: #fff;
+            text-align: center; border-radius: 4px; padding: 12px; position: fixed;
+            z-index: 100; left: 50%; bottom: 30px; transform: translateX(-50%);
+            font-size: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
+    </style>
+</head>
+<body>
+
+    <aside>
+        <div class="sidebar-header">
+            <h2>MS Store Support</h2>
+            <p>Advocate Dashboard</p>
+        </div>
+        <div class="sidebar-content">
+            <div class="input-group">
+                <label>Seu Nome (Advocate)</label>
+                <input type="text" id="agentName" placeholder="Ex: João" oninput="updateTexts()">
+            </div>
+            <div class="input-group">
+                <label>Nome do Cliente</label>
+                <input type="text" id="clientName" placeholder="Ex: Maria" oninput="updateTexts()">
+            </div>
+            <div class="input-group">
+                <label>Produto / Assunto</label>
+                <input type="text" id="product" placeholder="Ex: M365 Family" oninput="updateTexts()">
+            </div>
+            <div class="input-group">
+                <label>Nº Chamado (SR)</label>
+                <input type="text" id="ticketNumber" placeholder="XXXXXXXXXX" oninput="updateTexts()">
+            </div>
+            <div class="input-group">
+                <label>Valor (R$)</label>
+                <input type="text" id="valueAmount" placeholder="Ex: 450,00" oninput="updateTexts()">
+            </div>
+            <div class="input-group">
+                <label>Final Cartão</label>
+                <input type="text" id="cardLast4" placeholder="Ex: 3637" oninput="updateTexts()">
+            </div>
+             <div class="input-group">
+                <label>Horário Fim (Ex: 18:00)</label>
+                <input type="text" id="endTime" placeholder="18:00" oninput="updateTexts()">
+            </div>
+            
+            <button class="reset-btn" onclick="resetForm()">Limpar Tudo</button>
+        </div>
+    </aside>
+
+    <main>
+        <div class="tabs-container">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openTab('tool')">🛠️ Ferramenta de Scripts</button>
+                <button class="tab-btn" onclick="openTab('kb')">📚 Base de Conhecimento</button>
+                <button class="tab-btn" onclick="openTab('procedures')">📋 Procedimentos</button>
+            </div>
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchBox" placeholder="Pesquisar..." onkeyup="filterContent()">
+            </div>
+        </div>
+
+        <div class="content-area">
+
+            <div id="tool" class="tab-content active">
+                
+                <div class="section-title">Abertura e Dados</div>
+                <div class="script-grid">
+                    <div class="card" data-keywords="ola saudação suporte">
+                        <div class="card-header">
+                            <h3>Abertura Suporte</h3>
+                            <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+                        </div>
+                        <div class="card-text">Olá <span class="var clientName">[Nome]</span>, é um prazer tê-lo aqui conosco hoje :)
+Eu me chamo <span class="var agentName">[Seu Nome]</span> e vou te auxiliar com <span class="var product">[Assunto]</span>.</div>
+                    </div>
+
+                    <div class="card" data-keywords="ola saudação vendas">
+                        <div class="card-header">
+                            <h3>Abertura Vendas</h3>
+                            <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+                        </div>
+                        <div class="card-text">Olá! <span class="var clientName">[Nome]</span>, é um prazer tê-lo aqui conosco hoje :).
+Eu me chamo <span class="var agentName">[Seu Nome]</span>, e hoje vou ajudá-lo a fazer sua compra conosco do <span class="var product">[Produto]</span>.</div>
+                    </div>
+
+                    <div class="card" data-keywords="dados cadastro telefone email">
+                        <div class="card-header">
+                            <h3>Solicitar Dados</h3>
+                            <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+                        </div>
+                        <div class="card-text">Antes de iniciarmos, para que eu possa registrar a nossa interação e iniciar seu suporte, me informe por favor: e-mail e telefone de contato.
+Para garantir agilidade em sua interação, mantenha esta comunicação ativa.</div>
+                    </div>
+
+                     <div class="card" data-keywords="fortificar codigo segurança">
+                        <div class="card-header">
+                            <h3>Fortificar (Código)</h3>
+                            <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+                        </div>
+                        <div class="card-text">Para que eu possa ter acesso às informações de sua conta, por questões de segurança eu preciso enviar um código 6 dígitos em sua caixa de entrada de e-mails e/ou em seu celular, por favor, você pode confirmar o código para que possamos continuar.</div>
+                    </div>
+                </div>
+
+                <div class="section-title">Strikes (Ausência)</div>
+                <div class="script-grid">
+                    <div class="card" data-keywords="strike 1 2 minutos">
+                        <div class="card-header">
+                            <h3>Strike 1 (2 min)</h3>
+                            <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+                        </div>
+                        <div class="card-text">Não recebi nenhuma mensagem sua e já se passou algum tempo desde a última vez que interagimos. Em caso de dúvidas, estou por aqui.</div>
+                    </div>
+                    <div class="card" data-keywords="strike 2 4 minutos">
+                        <div class="card-header">
+                            <h3>Strike 2 (4 min)</h3>
+                            <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+                        </div>
+                        <div class="card-text">Já se passaram alguns minutos da última vez que interagimos e ainda não recebi nenhuma mensagem sua. Você ainda precisa de ajuda?</div>
+                    </div>
+                     <div class="card" data-keywords="strike 3 6 minutos encerrar">
+                        <div class="card-header">
+                            <h3>Strike 3 (Finalizar)</h3>
+                            <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+                        </div>
+                        <div class="card-text">Ainda não recebemos nenhuma resposta sua. Acredito que não haja mais dúvidas, então estou fechando esta sessão de Chat.</div>
+                    </div>
+                </div>
+
+                <div class="section-title">Vendas e Ofertas (Romance)</div>
+                <div class="script-grid">
+                    <div class="card" data-keywords="m365 personal onedrive">
+                        <div class="card-header">
+                            <h3>Pitch M365 Personal</h3>
+                            <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+                        </div>
+                        <div class="card-text">Eu utilizo o Microsoft 365 Personal para meus estudos, e é bem vantajoso, pois tem acesso ao OneDrive com 1TB de armazenamento. Facilita o dia a dia, pois o que salvar em 1 dispositivo, fica salvo automaticamente no outro.</div>
+                    </div>
+                    <div class="card" data-keywords="office perpetuo word excel">
+                        <div class="card-header">
+                            <h3>Pitch Office Perpétuo</h3>
+                            <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+                        </div>
+                        <div class="card-text">Nosso licenciamento perpétuo é um ótimo investimento! Você pode reinstalar se formatar ou trocar de máquina, pois o produto fica sempre disponível para download no site da sua Conta Microsoft.</div>
+                    </div>
+                    <div class="card" data-keywords="termos venda aceite">
+                        <div class="card-header">
+                            <h3>Termos de Venda</h3>
+                            <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+                        </div>
+                        <div class="card-text">Estamos realizando o pedido de <span class="var product">[Produto]</span> no valor total de <span class="var valueAmount">[Valor]</span>. Ao processar esse pedido em seu nome, você concorda com os Termos de Venda da Microsoft. Tenho sua permissão para realizar essa compra?</div>
+                    </div>
+                </div>
+
+                <div class="section-title">Procedimentos Específicos</div>
+                <div class="script-grid">
+                    <div class="card" data-keywords="reembolso elod carta destruição">
+                        <div class="card-header">
+                            <h3>Reembolso (ELOD)</h3>
+                            <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+                        </div>
+                        <div class="card-text">Para seguirmos com o reembolso, preciso do seu aceite na Carta de Destruição (ELOD). Isso confirma que você desinstalará e excluirá qualquer cópia do software. Podemos prosseguir com esse acordo?</div>
+                    </div>
+                    <div class="card" data-keywords="conta bloqueada formulario">
+                        <div class="card-header">
+                            <h3>Conta Bloqueada (Form)</h3>
+                            <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+                        </div>
+                        <div class="card-text">Entendo que ter sua conta bloqueada é frustrante. Nossos termos ajudam a proteger você.
+Encaminhei ao seu e-mail o link para o formulário de recuperação (ACSR) com dicas de preenchimento. A Microsoft analisará e responderá em até 24h.</div>
+                    </div>
+                     <div class="card" data-keywords="fim turno transferencia">
+                        <div class="card-header">
+                            <h3>Fim de Turno (Transferir)</h3>
+                            <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+                        </div>
+                        <div class="card-text"><span class="var clientName">[Nome]</span>, minha jornada de trabalho irá encerrar em breve. Deseja ser transferido para o próximo analista para continuar o seu atendimento?</div>
+                    </div>
+                     <div class="card" data-keywords="fim expediente operação sem resposta">
+                        <div class="card-header">
+                            <h3>Fim Operação (Sem Resposta)</h3>
+                            <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+                        </div>
+                        <div class="card-text">Como estamos encerrando nosso horário de funcionamento, minha tela bloqueará automaticamente às <span class="var endTime">[Hora]</span>h. Peço que entre em contato conosco novamente no horário comercial.</div>
+                    </div>
+                </div>
+
+                <div class="section-title">Encerramento</div>
+                <div class="script-grid">
+                    <div class="card" data-keywords="recapitulação venda resumo">
+                        <div class="card-header">
+                            <h3>Recapitulação Venda</h3>
+                            <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+                        </div>
+                        <div class="card-text">Realizamos a compra do <span class="var product">[Produto]</span> no valor de <span class="var valueAmount">[Valor]</span> no método de pagamento final <span class="var cardLast4">[Cartão]</span> vinculado à sua conta. O nº do nosso chamado é <span class="var ticketNumber">[SR]</span>. Posso ajudar com algo mais?</div>
+                    </div>
+                    <div class="card" data-keywords="fim tchau encerramento">
+                        <div class="card-header">
+                            <h3>Encerramento Padrão</h3>
+                            <button class="copy-btn" onclick="copyText(this)">Copiar</button>
+                        </div>
+                        <div class="card-text">A Microsoft Store agradece o seu contato!
+Horário de Atendimento: Seg a Sex (9h às 21h), Finais de semana (10h às 18h).
+Caso precise, fale conosco pelo chat ou 0800 047 4688.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="procedures" class="tab-content">
+                
+                <div class="doc-block" data-keywords="cobrança desconhecida fraude cartão">
+                    <h2>Fluxo: Cobrança Não Reconhecida</h2>
+                    <p>Quando o cliente não reconhece uma cobrança no cartão.</p>
+                    
+                    <div class="flow-step">
+                        <strong>1. Sondagem Inicial:</strong><br>
+                        "Você tem uma conta Microsoft?"
+                    </div>
+
+                    <div class="flow-step">
+                        <strong>CENÁRIO A: Cliente TEM conta Microsoft</strong>
+                        <ul>
+                            <li>Pedir para verificar histórico em: <a href="https://account.microsoft.com/billing/orders" target="_blank">account.microsoft.com/billing/orders</a></li>
+                            <li><strong>Localizou a compra?</strong>
+                                <ul>
+                                    <li>Se for <strong>JOGO</strong>: Direcionar para <a href="http://xbox.com/refund" target="_blank">xbox.com/refund</a></li>
+                                    <li>Se <strong>NÃO</strong> for jogo: Verificar tempo da compra. Se elegível, fazer reembolso.</li>
+                                </ul>
+                            </li>
+                            <li><strong>Não localizou a compra?</strong>
+                                <ul>
+                                    <li>Verificar se possui outra conta.</li>
+                                    <li>Questionar se emprestou o cartão.</li>
+                                    <li>Se não achar: Direcionar para a <strong>Administradora do Cartão</strong>.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="flow-step">
+                        <strong>CENÁRIO B: Cliente NÃO TEM conta Microsoft</strong>
+                        <ul>
+                            <li>Questionar se emprestou o cartão.</li>
+                            <li>Se emprestou: O titular da conta MS deve entrar em contato.</li>
+                            <li>Se não: Direcionar para a <strong>Administradora do Cartão</strong>.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="doc-block" data-keywords="reembolso perpetuo assinatura regra">
+                    <h2>Política de Reembolso</h2>
+                    
+                    <h3>Produtos Perpétuos (Office, Windows)</h3>
+                    <div class="alert-box">Prazo: <strong>14 dias</strong> a partir da compra.</div>
+                    <ol>
+                        <li>Confirmar faturamento MS.</li>
+                        <li>Tentar retenção.</li>
+                        <li><strong>Obrigatório:</strong> Aceite da Carta de Destruição (ELOD).</li>
+                        <li>Processar via CST (comentários da taxonomia).</li>
+                        <li>Abrir consulta AR para T2 desativar chave.</li>
+                    </ol>
+
+                    <h3>Assinaturas (M365)</h3>
+                    <p>Verificar elegibilidade (geralmente até 30 dias da compra ou renovação, dependendo do caso). Cancelar recorrência.</p>
+                </div>
+
+                <div class="doc-block" data-keywords="transferencia vendas suporte regras">
+                    <h2>Guia de Transferências</h2>
+                    <p>Só transferir se esgotar as possibilidades no seu escopo.</p>
+                    
+                    <h3>Vendas (Brasil - CNPJ)</h3>
+                    <p>Fila: <strong>PRODUCTIVITY-PRESALES-PT-BR</strong> (Somente se houver advocates online).</p>
+
+                    <h3>Vendas (Portugal)</h3>
+                    <p>Telefone: <strong>800 208 975</strong> ou Site.</p>
+
+                    <h3>Suporte Técnico / Consumer</h3>
+                    <p>Enviar link de agendamento: <a href="https://support.microsoft.com/pt-br/contactus">Contact Us</a>.</p>
+                    
+                    <h3>Fim de Jornada</h3>
+                    <p>Avisar 10 min antes. Transferir com Conversation ID.</p>
+                </div>
+
+                <div class="doc-block" data-keywords="ferramenta liveperson status icones">
+                    <h2>Uso da Ferramenta (LivePerson)</h2>
+                    
+                    <h3>Status</h3>
+                    <ul>
+                        <li>🟢 <strong>Online:</strong> Recebendo chats.</li>
+                        <li>🟡 <strong>Away:</strong> Pausa (Breaks, Lunch, System Issues, Training).</li>
+                        <li>⚫ <strong>Back Soon:</strong> Não utilizar.</li>
+                    </ul>
+
+                    <h3>Ícones na Fila</h3>
+                    <ul>
+                        <li>⚠️ Tempo de espera alto.</li>
+                        <li>💬 Conversa ativa.</li>
+                        <li>💤 Conversa inativa (início strike 5 min).</li>
+                        <li>❌ Conversa encerrada.</li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div id="kb" class="tab-content">
+                <div class="doc-block">
+                    <h2>Lista de KBs (Códigos de Procedimento)</h2>
+                    <p>Use CTRL+F ou a busca acima para filtrar.</p>
+                    
+                    <div class="kb-grid">
+                        <div class="kb-item"><div class="kb-code">930018</div>Account Takeover (Invadida)</div>
+                        <div class="kb-item"><div class="kb-code">2880022</div>Conta Bloqueada</div>
+                        <div class="kb-item"><div class="kb-code">4522164</div>Como cancelar assinatura</div>
+                        <div class="kb-item"><div class="kb-code">4338531</div>Política Reembolso: Assinaturas</div>
+                        <div class="kb-item"><div class="kb-code">4457540</div>Política Reembolso: Jogos</div>
+                        <div class="kb-item"><div class="kb-code">2894713</div>Atividade incomum na conta</div>
+                        <div class="kb-item"><div class="kb-code">2884712</div>Redefinição de senha</div>
+                        <div class="kb-item"><div class="kb-code">4058372</div>Add/Remover Pagamento</div>
+                        <div class="kb-item"><div class="kb-code">982204</div>Cobranças fraudulentas</div>
+                        <div class="kb-item"><div class="kb-code">2979990</div>Conta não existe</div>
+                        <div class="kb-item"><div class="kb-code">4506511</div>Cenários Verificação Conta</div>
+                        <div class="kb-item"><div class="kb-code">2555912</div>Encerramento de Conta</div>
+                        <div class="kb-item"><div class="kb-code">3000719</div>Dunning (Falha Cobrança)</div>
+                        <div class="kb-item"><div class="kb-code">2885714</div>Risk Reject</div>
+                        <div class="kb-item"><div class="kb-code">4050628</div>Call Back</div>
+                        <div class="kb-item"><div class="kb-code">5014243</div>Codificação DfC Store</div>
+                        <div class="kb-item"><div class="kb-code">2190346</div>Limites Suporte: Download/Instalação</div>
+                    </div>
+                </div>
+
+                 <div class="doc-block" data-keywords="links uteis externos">
+                    <h2>Links Úteis Externos</h2>
+                    <div class="kb-grid">
+                         <div class="kb-item"><a href="https://support.microsoft.com/pt-br/account-billing/ajuda-com-o-formul%C3%A1rio-de-recupera%C3%A7%C3%A3o-de-conta-microsoft-b19c02d1-a782-dee6-93c3-dc8113b20c42" target="_blank">Ajuda Form ACSR</a></div>
+                         <div class="kb-item"><a href="https://support.microsoft.com/pt-br/office/compartilhe-sua-assinatura-do-microsoft-365-family-b389b9ce-3ea3-4a82-9017-39d7997c7cba" target="_blank">Compartilhar Family</a></div>
+                         <div class="kb-item"><a href="https://account.microsoft.com/billing/orders" target="_blank">Histórico de Pedidos</a></div>
+                         <div class="kb-item"><a href="https://support.apple.com/pt-br/HT202039" target="_blank">Cancelar Apple</a></div>
+                         <div class="kb-item"><a href="https://support.google.com/googleplay/answer/7018481?hl=pt" target="_blank">Cancelar Google Play</a></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="toast">Texto copiado com sucesso!</div>
+
+    <script>
+        // --- VARIÁVEIS & UPDATES ---
+        function updateTexts() {
+            const map = {
+                agentName: document.getElementById('agentName').value || "[Seu Nome]",
+                clientName: document.getElementById('clientName').value || "[Nome]",
+                product: document.getElementById('product').value || "[Produto]",
+                ticketNumber: document.getElementById('ticketNumber').value || "XXXXXXXX",
+                valueAmount: document.getElementById('valueAmount').value || "[Valor]",
+                cardLast4: document.getElementById('cardLast4').value || "XXXX",
+                endTime: document.getElementById('endTime').value || "XX:XX"
+            };
+
+            for (const [key, value] of Object.entries(map)) {
+                document.querySelectorAll(`.var.${key}`).forEach(el => el.textContent = value);
+            }
+        }
+
+        function resetForm() {
+            document.querySelectorAll('aside input').forEach(input => input.value = '');
+            updateTexts();
+        }
+
+        // --- TABS SYSTEM ---
+        function openTab(tabId) {
+            // Hide contents
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            // Reset buttons
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            // Activate logic
+            document.getElementById(tabId).classList.add('active');
+            
+            // Find button that calls this function (trick to avoid passing 'this')
+            const buttons = document.querySelectorAll('.tab-btn');
+            if(tabId === 'tool') buttons[0].classList.add('active');
+            if(tabId === 'kb') buttons[1].classList.add('active');
+            if(tabId === 'procedures') buttons[2].classList.add('active');
+        }
+
+        // --- FILTER SEARCH ---
+        function filterContent() {
+            const filter = document.getElementById('searchBox').value.toLowerCase();
+            const activeTab = document.querySelector('.tab-content.active');
+            
+            // Search in Cards, Doc Blocks and KB Items within the active tab
+            const items = activeTab.querySelectorAll('.card, .doc-block, .kb-item');
+
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                const keywords = item.getAttribute('data-keywords') || "";
+                
+                if (text.includes(filter) || keywords.includes(filter)) {
+                    item.style.display = "";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        }
+
+        // --- COPY FUNCTION ---
+        function copyText(btn) {
+            const card = btn.closest('.card');
+            const text = card.querySelector('.card-text').innerText;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                showToast();
+                // Visual feedback on button
+                const originalText = btn.innerText;
+                btn.innerText = "Copiado!";
+                btn.style.background = "#107c10";
+                btn.style.color = "#fff";
+                
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.background = "";
+                    btn.style.color = "";
+                }, 2000);
+            });
+        }
+
+        function showToast() {
+            const toast = document.getElementById("toast");
+            toast.className = "show";
+            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        // Initialize placeholders
+        updateTexts();
+    </script>
+</body>
+</html>
