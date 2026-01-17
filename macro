@@ -1,30 +1,22 @@
-Sub CriarGeradorDeMovimento()
+Sub CriarGerador()
     Dim caminhoArquivo As String
     Dim numArquivo As Integer
     Dim conteudoScript As String
     
-    ' --- CONFIGURAÇÃO ---
-    ' O arquivo será salvo na sua Área de Trabalho (Desktop)
     caminhoArquivo = CreateObject("WScript.Shell").SpecialFolders("Desktop") & "\ManterAtivo.vbs"
     
-    ' --- O CÓDIGO DO VBSCRIPT ---
-    ' Aqui montamos o texto que vai dentro do arquivo
-    conteudoScript = "Set wsc = CreateObject(""WScript.Shell"")" & vbCrLf & _
-                     "Do" & vbCrLf & _
-                     "    ' Espera 60 segundos" & vbCrLf & _
-                     "    WScript.Sleep(60000)" & vbCrLf & _
-                     "    ' Aperta Scroll Lock 2x" & vbCrLf & _
-                     "    wsc.SendKeys(""{SCROLLLOCK}"")" & vbCrLf & _
-                     "    wsc.SendKeys(""{SCROLLLOCK}"")" & vbCrLf & _
-                     "Loop"
+    conteudoScript = "Set wsc = CreateObject(""WScript.Shell"")" & vbCrLf
+    conteudoScript = conteudoScript & "Do" & vbCrLf
+    conteudoScript = conteudoScript & "WScript.Sleep(60000)" & vbCrLf
+    conteudoScript = conteudoScript & "wsc.SendKeys(""{SCROLLLOCK}"")" & vbCrLf
+    conteudoScript = conteudoScript & "wsc.SendKeys(""{SCROLLLOCK}"")" & vbCrLf
+    conteudoScript = conteudoScript & "Loop"
 
-    ' --- CRIAÇÃO DO ARQUIVO ---
     numArquivo = FreeFile
     
-    ' Cria o arquivo no local definido
     Open caminhoArquivo For Output As #numArquivo
     Print #numArquivo, conteudoScript
     Close #numArquivo
     
-    MsgBox "Sucesso! O arquivo 'ManterAtivo.vbs' foi criado na sua Área de Trabalho.", vbInformation
+    MsgBox "Arquivo criado na Área de Trabalho."
 End Sub
